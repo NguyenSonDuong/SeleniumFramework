@@ -1,0 +1,9 @@
+C:\Users\NguyenSonDuong\source\repos\SeleniumFramework\SeleniumFramework\obj\Debug\SeleniumFramework.csprojAssemblyReference.cache
+C:\Users\NguyenSonDuong\source\repos\SeleniumFramework\SeleniumFramework\obj\Debug\SeleniumFramework.csproj.CoreCompileInputs.cache
+C:\Users\NguyenSonDuong\source\repos\SeleniumFramework\SeleniumFramework\bin\Debug\SeleniumFramework.dll
+C:\Users\NguyenSonDuong\source\repos\SeleniumFramework\SeleniumFramework\bin\Debug\SeleniumFramework.pdb
+C:\Users\NguyenSonDuong\source\repos\SeleniumFramework\SeleniumFramework\bin\Debug\WebDriver.dll
+C:\Users\NguyenSonDuong\source\repos\SeleniumFramework\SeleniumFramework\bin\Debug\WebDriver.xml
+C:\Users\NguyenSonDuong\source\repos\SeleniumFramework\SeleniumFramework\obj\Debug\SeleniumFramework.csproj.CopyComplete
+C:\Users\NguyenSonDuong\source\repos\SeleniumFramework\SeleniumFramework\obj\Debug\SeleniumFramework.dll
+C:\Users\NguyenSonDuong\source\repos\SeleniumFramework\SeleniumFramework\obj\Debug\SeleniumFramework.pdb

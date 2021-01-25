@@ -27,6 +27,20 @@ namespace AmazonSaveAcc.actionmain
                 richText.AppendText(DateTime.Now.ToShortDateString()+" "+DateTime.Now.ToShortTimeString() + " :" + mess +"\n");
             });
         }
+        public static void WriteListToFile(String path, Object[] listObject, String split = "\n")
+        {
+            try
+            {
+                foreach (Object item in listObject)
+                {
+                    File.AppendAllText(path, item.ToString() + split);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
 
         public static void AddLogToFile(String mess, ErrorHandle errorHandle)
         {

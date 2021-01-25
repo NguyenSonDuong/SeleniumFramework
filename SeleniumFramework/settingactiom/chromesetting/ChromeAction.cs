@@ -1,5 +1,6 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
+using SeleniumFramework;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace AmazonSaveAcc.actionmain
 {
+    public delegate void ActionRunHandle();
     public class ChromeAction
     {
         private ChromeSetting chromeSetting;
@@ -171,6 +173,31 @@ namespace AmazonSaveAcc.actionmain
                     errorEvent(ex, this, 100);
                 else
                     throw ex;
+            }
+        }
+        public void ScollMovieAction(int from, int to, int jump = 20, int delay = 10, ActionRunHandle actionRunHandle = null)
+        {
+            if (to >= from)
+            {
+                for (int i = from; i < to; i += jump)
+                {
+                    processEvent("Vị trí:" + i, this);
+                    chromeSetting.Js.ExecuteScript($"window.scrollTo(0,{i});");
+                    if (actionRunHandle != null)
+                        actionRunHandle();
+                    Thread.Sleep(delay);
+                }
+            }
+            else
+            {
+                for (int i = from; i >= to; i -= jump)
+                {
+                    processEvent("Vị trí:" + i, this);
+                    chromeSetting.Js.ExecuteScript($"window.scrollTo(0,{i});");
+                    if (actionRunHandle != null)
+                        actionRunHandle();
+                    Thread.Sleep(delay);
+                }
             }
         }
         public void SendKeyClass(String className, String mess)

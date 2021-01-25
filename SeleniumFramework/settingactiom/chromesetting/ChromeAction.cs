@@ -220,7 +220,14 @@ namespace AmazonSaveAcc.actionmain
         {
             try
             {
-                chromeSetting.ChromeDriver.FindElementByName(Name).Clear();
+                try
+                {
+                    chromeSetting.ChromeDriver.FindElementByName(Name).Clear();
+                }
+                catch(Exception ex)
+                {
+
+                }
                 chromeSetting.ChromeDriver.FindElementByName(Name).SendKeys(mess);
 
             }
@@ -236,7 +243,15 @@ namespace AmazonSaveAcc.actionmain
         {
             try
             {
-                chromeSetting.ChromeDriver.FindElementByXPath(xPath).Clear();
+                try
+                {
+                    chromeSetting.ChromeDriver.FindElementByXPath(xPath).Clear();
+                }
+                catch (Exception ex)
+                {
+
+                }
+               
                 chromeSetting.ChromeDriver.FindElementByXPath(xPath).SendKeys(mess);
 
             }
@@ -252,7 +267,14 @@ namespace AmazonSaveAcc.actionmain
         {
             try
             {
-                chromeSetting.ChromeDriver.FindElementById(id).Clear();
+                try
+                {
+                    chromeSetting.ChromeDriver.FindElementById(id).Clear();
+                }
+                catch (Exception ex)
+                {
+
+                }
                 chromeSetting.ChromeDriver.FindElementById(id).SendKeys(mess);
             }
             catch (Exception ex)

@@ -41,7 +41,23 @@ namespace AmazonSaveAcc.actionmain
                 throw ex;
             }
         }
-
+        public static List<String> ReadListToFile(String path, char split1 = '\n')
+        {
+            try
+            {
+                List<String> listout = new List<string>();
+                String[] listObject = File.ReadAllText(path).Split(split1);
+                foreach (String item in listObject)
+                {
+                    listout.Add(item);
+                }
+                return listout;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         public static void AddLogToFile(String mess, ErrorHandle errorHandle)
         {
             try

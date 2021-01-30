@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,10 +28,58 @@ namespace AmazonSaveAcc.actionmain
                 richText.AppendText(DateTime.Now.ToShortDateString()+" "+DateTime.Now.ToShortTimeString() + " :" + mess +"\n");
             });
         }
-        public static void WriteListToFile(String path, Object[] listObject, String split = "\n")
+        public static void SaveObject(String path, Object item, char split)
+        {
+            PropertyInfo[] propertyInfo = item.GetType().GetProperties();
+            File.WriteAllText(path, "");
+            foreach (PropertyInfo i in propertyInfo)
+            {
+                File.AppendAllText(path, i.Name + split + i.GetValue(item) + "\n");
+            }
+        }
+        public static void SetValueObject(String path, Object item, char split)
+        {
+            List<String> list = ReadListToFile(path);
+            foreach(String it in list)
+            {
+                String[] value = it.Split(split);
+                if (value.Length < 2)
+                {
+                    continue;
+                }
+                PropertyInfo property = item.GetType().GetProperty(value[0]);
+                switch (Type.GetTypeCode(property.PropertyType))
+                {
+                    case TypeCode.Boolean:
+                        property.SetValue(item, bool.Parse(value[1]), null);
+                        break;
+                    case TypeCode.Int32:
+                        property.SetValue(item, Int32.Parse(value[1]), null);
+                        break;
+                    case TypeCode.Int16:
+                        property.SetValue(item, Int16.Parse(value[1]), null);
+                        break;
+                    case TypeCode.Int64:
+                        property.SetValue(item, Int64.Parse(value[1]), null);
+                        break;
+                    case TypeCode.Double:
+                        property.SetValue(item, Double.Parse(value[1]), null);
+                        break;
+                    case TypeCode.String:
+                        property.SetValue(item, value[1]+"", null);
+                        break;
+
+
+                }
+                
+            }
+        }
+        public static void WriteListToFile(String path, Object[] listObject, String split = "\n", bool isAppend = false)
         {
             try
             {
+                if(!isAppend)
+                    File.WriteAllText(path, "");
                 foreach (Object item in listObject)
                 {
                     File.AppendAllText(path, item.ToString() + split);

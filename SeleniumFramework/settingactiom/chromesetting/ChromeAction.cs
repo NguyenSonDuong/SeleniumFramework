@@ -623,6 +623,22 @@ namespace AmazonSaveAcc.actionmain
                     throw ex;
             }
         }
+        public void MovieTo(IWebElement webElement)
+        {
+            try
+            {
+                Actions actions = new Actions(chromeSetting.ChromeDriver);
+                actions.MoveToElement(webElement).Build().Perform();
+
+            }
+            catch (Exception ex)
+            {
+                if (errorEvent != null)
+                    errorEvent(ex, this, 100);
+                else
+                    throw ex;
+            }
+        }
         public void MovieToXPath(String xPath, int pos)
         {
             try

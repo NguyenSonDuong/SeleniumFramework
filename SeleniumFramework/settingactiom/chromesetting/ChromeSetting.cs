@@ -80,7 +80,7 @@ namespace AmazonSaveAcc.actionmain
             this.chromeDriverService = chromeDriverService;
         }
         // Khơi tạo chrome driver với các cấu hình tiêu chuẩn
-        public ChromeDriver BuildChromePortable(String pathEXE = "", String pathProfile = "", String pathChromeDriver = "",bool isImage = true)
+        public ChromeDriver BuildChromePortable(String pathEXE = "", String pathProfile = "", String pathChromeDriver = "",bool isImage = false)
         {
             chromeDriver = null;
             chromeOptions = null;
@@ -121,6 +121,10 @@ namespace AmazonSaveAcc.actionmain
                 catch (Exception)
                 {
                     chromeOptions = new ChromeOptions();
+                    if (!isImage)
+                    {
+                        chromeOptions.AddUserProfilePreference("profile.default_content_setting_values.images", 2);
+                    }
                     chromeOptions.AddArgument("disable-infobars");
                     chromeOptions.AddArgument("--silent");
                 }

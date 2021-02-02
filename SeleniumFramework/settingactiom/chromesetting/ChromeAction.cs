@@ -160,6 +160,42 @@ namespace AmazonSaveAcc.actionmain
                     throw ex;
             }
         }
+        public String GetText(String xPath,int pos)
+        {
+            try
+            {
+                return chromeSetting.ChromeDriver.FindElementsByXPath(xPath)[pos].Text;
+            }
+            catch (Exception ex)
+            {
+                if (errorEvent != null)
+                    errorEvent(ex, this, 100);
+                else
+                    throw ex;
+            }
+            return "";
+        }
+        public List<String> GetAllText(String xPath, int pos)
+        {
+            List<String> listResult = new List<string>();
+            try
+            {
+                foreach (IWebElement item in chromeSetting.ChromeDriver.FindElementsByXPath(xPath))
+                {
+                    listResult.Add(item.Text);
+                }
+                return listResult;
+            }
+            catch (Exception ex)
+            {
+                if (errorEvent != null)
+                    errorEvent(ex, this, 100);
+                else
+                    throw ex;
+            }
+            return listResult;
+        }
+
         public void ClickID(String className)
         {
             try

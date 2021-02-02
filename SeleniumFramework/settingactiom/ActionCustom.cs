@@ -68,11 +68,23 @@ namespace AmazonSaveAcc.actionmain
                     case TypeCode.String:
                         property.SetValue(item, value[1]+"", null);
                         break;
-
+                    case TypeCode.Object:
+                        property.SetValue(item, null, null);
+                        break;
+                    default:
+                        property.SetValue(item, null, null);
+                        break;
 
                 }
                 
             }
+        }
+        public static void CopyFilesRecursively(DirectoryInfo source, DirectoryInfo target)
+        {
+            foreach (DirectoryInfo dir in source.GetDirectories())
+                CopyFilesRecursively(dir, target.CreateSubdirectory(dir.Name));
+            foreach (FileInfo file in source.GetFiles())
+                file.CopyTo(Path.Combine(target.FullName, file.Name));
         }
         public static void WriteListToFile(String path, Object[] listObject, String split = "\n", bool isAppend = false)
         {

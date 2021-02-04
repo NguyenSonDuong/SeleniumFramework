@@ -319,7 +319,6 @@ namespace AmazonSaveAcc.actionmain
             {
                 chromeSetting.ChromeDriver.FindElementByClassName(className).Clear();
                 chromeSetting.ChromeDriver.FindElementByClassName(className).SendKeys(mess);
-
             }
             catch (Exception ex)
             {
@@ -364,7 +363,6 @@ namespace AmazonSaveAcc.actionmain
                 {
 
                 }
-               
                 chromeSetting.ChromeDriver.FindElementByXPath(xPath).SendKeys(mess);
 
             }

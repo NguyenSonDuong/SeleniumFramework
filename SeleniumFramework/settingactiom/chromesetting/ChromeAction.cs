@@ -160,6 +160,83 @@ namespace AmazonSaveAcc.actionmain
                     throw ex;
             }
         }
+        public void ClickXPath(String className, String stringSame, bool isExactly, int quatity)
+        {
+            try
+            {
+                int qua = 0;
+                foreach (IWebElement item in chromeSetting.ChromeDriver.FindElementsByXPath(className))
+                {
+                    if (qua >= quatity)
+                    {
+                        break;
+                    }
+                    if (isExactly)
+                    {
+                        if (item.Text.Trim().Equals(stringSame))
+                        {
+                            item.Click();
+                            qua++;
+                        }
+                    }
+                    else
+                    {
+                        if (item.Text.Trim().Contains(stringSame))
+                        {
+                            item.Click();
+                            qua++;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                if (errorEvent != null)
+                    errorEvent(ex, this, 100);
+                else
+                    throw ex;
+            }
+        }
+        public void ClickXPathPos(String className, String stringSame, bool isExactly, int pos)
+        {
+            try
+            {
+                int qua = 0;
+                foreach (IWebElement item in chromeSetting.ChromeDriver.FindElementsByXPath(className))
+                {
+                    
+                    if (isExactly)
+                    {
+                        if (item.Text.Trim().Equals(stringSame))
+                        {
+                            if(qua == pos)
+                            {
+                                item.Click();
+                            }
+                            qua++;
+                        }
+                    }
+                    else
+                    {
+                        if (item.Text.Trim().Contains(stringSame))
+                        {
+                            if (qua == pos)
+                            {
+                                item.Click();
+                            }
+                            qua++;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                if (errorEvent != null)
+                    errorEvent(ex, this, 100);
+                else
+                    throw ex;
+            }
+        }
         public String GetText(String xPath,int pos)
         {
             try

@@ -101,7 +101,8 @@ namespace AmazonSaveAcc.actionmain
                         chromeOptions = new ChromeOptions();
                         if (!isImage)
                         {
-                            chromeOptions.AddUserProfilePreference("profile.default_content_setting_values.images", 2);
+                            chromeOptions.AddExtension(AppDomain.CurrentDomain.BaseDirectory+"\\blockImage.crx");
+                            //chromeOptions.AddUserProfilePreference("profile.default_content_setting_values.images", 2);
                         }
                         if (!String.IsNullOrEmpty(pathEXE))
                             chromeOptions.BinaryLocation = pathEXE;
@@ -123,7 +124,8 @@ namespace AmazonSaveAcc.actionmain
                     chromeOptions = new ChromeOptions();
                     if (!isImage)
                     {
-                        chromeOptions.AddUserProfilePreference("profile.default_content_setting_values.images", 2);
+                        chromeOptions.AddExtension(AppDomain.CurrentDomain.BaseDirectory + "\\blockImage.crx");
+                        //chromeOptions.AddUserProfilePreference("profile.default_content_setting_values.images", 2);
                     }
                     chromeOptions.AddArgument("disable-infobars");
                     chromeOptions.AddArgument("--silent");

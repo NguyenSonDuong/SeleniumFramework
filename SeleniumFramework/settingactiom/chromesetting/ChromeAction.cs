@@ -252,14 +252,55 @@ namespace AmazonSaveAcc.actionmain
             }
             return "";
         }
-        public List<String> GetAllText(String xPath, int pos)
+        public List<String> GetAllText(String xPath, ProcessHandle processHandle = null)
         {
             List<String> listResult = new List<string>();
             try
             {
                 foreach (IWebElement item in chromeSetting.ChromeDriver.FindElementsByXPath(xPath))
                 {
-                    listResult.Add(item.Text);
+                    try
+                    {
+                        if (processHandle != null)
+                            processHandle(item, this);
+                        listResult.Add(item.Text);
+                    }
+                    catch(Exception ex)
+                    {
+                        if (errorEvent != null)
+                            errorEvent(ex, this, 100);
+                    }
+                    
+                }
+                return listResult;
+            }
+            catch (Exception ex)
+            {
+                if (errorEvent != null)
+                    errorEvent(ex, this, 100);
+                else
+                    throw ex;
+            }
+            return listResult;
+        }
+        public List<String> GetAllAttr(String xPath, String attr , ProcessHandle processHandle = null)
+        {
+            List<String> listResult = new List<string>();
+            try
+            {
+                foreach (IWebElement item in chromeSetting.ChromeDriver.FindElementsByXPath(xPath))
+                {
+                    try
+                    {
+                        if (processHandle != null)
+                            processHandle(item, this);
+                        listResult.Add(item.GetAttribute(attr));
+                    }
+                    catch (Exception ex)
+                    {
+                        if (errorEvent != null)
+                            errorEvent(ex, this, 100);
+                    }
                 }
                 return listResult;
             }
@@ -294,22 +335,44 @@ namespace AmazonSaveAcc.actionmain
             {
                 for (int i = from; i < to; i += jump)
                 {
-                    processEvent("Vị trí:" + i, this);
-                    chromeSetting.Js.ExecuteScript($"window.scrollTo(0,{i});");
-                    if (actionRunHandle != null)
-                        actionRunHandle();
-                    Thread.Sleep(delay);
+                    try
+                    {
+                        processEvent("Vị trí:" + i, this);
+                        chromeSetting.Js.ExecuteScript($"window.scrollTo(0,{i});");
+                        if (actionRunHandle != null)
+                            actionRunHandle();
+                        Thread.Sleep(delay);
+                    }
+                    catch (Exception ex)
+                    {
+                        if (errorEvent != null)
+                            errorEvent(ex, this, 100);
+                        else
+                            throw ex;
+                    }
+                    
                 }
             }
             else
             {
                 for (int i = from; i >= to; i -= jump)
                 {
-                    processEvent("Vị trí:" + i, this);
-                    chromeSetting.Js.ExecuteScript($"window.scrollTo(0,{i});");
-                    if (actionRunHandle != null)
-                        actionRunHandle();
-                    Thread.Sleep(delay);
+                    try
+                    {
+                        processEvent("Vị trí:" + i, this);
+                        chromeSetting.Js.ExecuteScript($"window.scrollTo(0,{i});");
+                        if (actionRunHandle != null)
+                            actionRunHandle();
+                        Thread.Sleep(delay);
+                    }
+                    catch (Exception ex)
+                    {
+                        if (errorEvent != null)
+                            errorEvent(ex, this, 100);
+                        else
+                            throw ex;
+                    }
+                    
                 }
             }
         }
@@ -704,7 +767,6 @@ namespace AmazonSaveAcc.actionmain
             {
                 Actions actions = new Actions(chromeSetting.ChromeDriver);
                 actions.MoveToElement(webElement).Build().Perform();
-
             }
             catch (Exception ex)
             {

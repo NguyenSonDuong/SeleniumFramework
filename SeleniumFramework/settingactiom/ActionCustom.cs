@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,11 +18,26 @@ namespace AmazonSaveAcc.actionmain
     public class ActionCustom
     {
         public static String PATH_SAVE_LOG = "log.ini";
+        [DllImport("user32.dll")]
+        public static extern void SwitchToThisWindow(IntPtr hWnd, bool turnon);
+
+        
         public static void Invoker(Control control, RunInvoker runInvoker)
         {
             control.Invoke(new MethodInvoker(runInvoker));
         }
+        public static void RemoveAllEvent(Object obj,String field)
+        {
+            FieldInfo f1 = typeof(Object).GetField(field,
+           BindingFlags.Static | BindingFlags.NonPublic);
 
+            object obj2 = f1.GetValue(obj);
+            PropertyInfo pi = obj.GetType().GetProperty("Events",
+                BindingFlags.NonPublic | BindingFlags.Instance);
+
+            EventHandlerList list = (EventHandlerList)pi.GetValue(obj, null);
+            list.RemoveHandler(obj2, list[obj2]);
+        }
         public static void AddLogToRicText(RichTextBox richText,String mess,Color color)
         {
             Invoker(richText, () =>
@@ -85,6 +103,26 @@ namespace AmazonSaveAcc.actionmain
                 CopyFilesRecursively(dir, target.CreateSubdirectory(dir.Name));
             foreach (FileInfo file in source.GetFiles())
                 file.CopyTo(Path.Combine(target.FullName, file.Name));
+                //Copy(file.FullName,Path.Combine(target.FullName, file.Name));
+        }
+        public static void Copy(String pathSource,String pathEnd)
+        {
+            using (var inputFile = new FileStream(
+                pathSource,
+                FileMode.Open, FileAccess.Read,
+                FileShare.ReadWrite))
+            {
+                using (var outputFile = new FileStream(pathEnd, FileMode.Create,
+                FileAccess.ReadWrite))
+                {
+                    var buffer = new byte[0x10000];
+                    int bytes;
+                    while ((bytes = inputFile.Read(buffer, 0, buffer.Length)) > 0)
+                    {
+                        outputFile.Write(buffer, 0, bytes);
+                    }
+                }
+            }
         }
         public static void WriteListToFile(String path, Object[] listObject, String split = "\n", bool isAppend = false)
         {

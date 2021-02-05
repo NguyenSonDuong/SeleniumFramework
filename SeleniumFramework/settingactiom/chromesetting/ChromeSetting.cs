@@ -9,6 +9,8 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Management;
+using System.Text.RegularExpressions;
 
 namespace AmazonSaveAcc.actionmain
 {
@@ -27,6 +29,8 @@ namespace AmazonSaveAcc.actionmain
         public ChromeOptions ChromeOptions { get => chromeOptions; set => chromeOptions = value; }
         public ChromeDriverService ChromeDriverService { get => chromeDriverService; set => chromeDriverService = value; }
         public IJavaScriptExecutor Js { get => js; set => js = value; }
+        public  IntPtr CurrentBrowserHwnd = IntPtr.Zero;
+        public  int CurrentBrowserPID = -1;
         public ChromeSetting()
         {
 
@@ -79,6 +83,28 @@ namespace AmazonSaveAcc.actionmain
             this.chromeOptions = chromeOptions;
             this.chromeDriverService = chromeDriverService;
         }
+        public void GetHandler()
+        {
+            System.Diagnostics.Process[] processes = System.Diagnostics.Process.GetProcessesByName("chrome");
+            for (int p = 0; p < processes.Length; p++)
+            {
+                ManagementObjectSearcher commandLineSearcher = new ManagementObjectSearcher("SELECT CommandLine FROM Win32_Process WHERE ProcessId = " + processes[p].Id);
+                String commandLine = "";
+                foreach (ManagementObject commandLineObject in commandLineSearcher.Get())
+                {
+                    commandLine += (String)commandLineObject["CommandLine"];
+                }
+
+                String script_pid_str = (new Regex("--scriptpid-(.+?) ")).Match(commandLine).Groups[1].Value;
+
+                if (!script_pid_str.Equals("") && Convert.ToInt32(script_pid_str).Equals(System.Diagnostics.Process.GetCurrentProcess().Id))
+                {
+                    CurrentBrowserPID = processes[p].Id;
+                    CurrentBrowserHwnd = processes[p].MainWindowHandle;
+                    break;
+                }
+            }
+        }
         // Khơi tạo chrome driver với các cấu hình tiêu chuẩn
         public ChromeDriver BuildChromePortable(String pathEXE = "", String pathProfile = "", String pathChromeDriver = "",bool isImage = false)
         {
@@ -99,6 +125,7 @@ namespace AmazonSaveAcc.actionmain
                     {
                         int port = random.Next(3000, 16000);
                         chromeOptions = new ChromeOptions();
+                        chromeOptions.AddArgument("scriptpid-" + System.Diagnostics.Process.GetCurrentProcess().Id);
                         if (!isImage)
                         {
                             chromeOptions.AddExtension(AppDomain.CurrentDomain.BaseDirectory+"\\blockImage.crx");
@@ -127,6 +154,7 @@ namespace AmazonSaveAcc.actionmain
                         chromeOptions.AddExtension(AppDomain.CurrentDomain.BaseDirectory + "\\blockImage.crx");
                         //chromeOptions.AddUserProfilePreference("profile.default_content_setting_values.images", 2);
                     }
+                    chromeOptions.AddArgument("scriptpid-" + System.Diagnostics.Process.GetCurrentProcess().Id);
                     chromeOptions.AddArgument("disable-infobars");
                     chromeOptions.AddArgument("--silent");
                 }

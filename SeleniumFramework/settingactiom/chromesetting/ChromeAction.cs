@@ -575,6 +575,34 @@ namespace AmazonSaveAcc.actionmain
                 return false;
             }
         }
+        public bool CheckXPath(String xPath, String mess,bool isExactly)
+        {
+            try
+            {
+                if(isExactly)
+                    return chromeSetting.ChromeDriver.FindElementByXPath(xPath).Text.Trim().Equals(mess);
+                else
+                    return chromeSetting.ChromeDriver.FindElementByXPath(xPath).Text.Trim().Equals(mess);
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+        public bool CheckXPath(String xPath, String mess, bool isExactly,int pos)
+        {
+            try
+            {
+                if (isExactly)
+                    return chromeSetting.ChromeDriver.FindElementsByXPath(xPath)[pos].Text.Trim().Equals(mess);
+                else
+                    return chromeSetting.ChromeDriver.FindElementsByXPath(xPath)[pos].Text.Trim().Equals(mess);
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
         public bool CheckXPath(String xPath)
         {
             try
@@ -670,6 +698,69 @@ namespace AmazonSaveAcc.actionmain
             }
 
 
+        }
+        public String GetTextElement(String xPath)
+        {
+            try
+            {
+                return chromeSetting.ChromeDriver.FindElementByXPath(xPath).Text;
+            }
+            catch (Exception ex)
+            {
+                if (errorEvent != null)
+                    errorEvent(ex, this, 100);
+                else
+                    throw ex;
+                
+            }
+            return "";
+        }
+        public String GetTextElement(String xPath, int pos)
+        {
+            try
+            {
+                return chromeSetting.ChromeDriver.FindElementsByXPath(xPath)[pos].Text;
+            }
+            catch (Exception ex)
+            {
+                if (errorEvent != null)
+                    errorEvent(ex, this, 100);
+                else
+                    throw ex;
+
+            }
+            return "";
+        }
+        public void CreateNewTap(String url)
+        {
+            try
+            {
+                ((IJavaScriptExecutor)chromeSetting.ChromeDriver).ExecuteScript("window.open();");
+                chromeSetting.ChromeDriver.SwitchTo().Window(chromeSetting.ChromeDriver.WindowHandles.Last());
+                GoToURL(url);
+            }
+            catch(Exception ex)
+            {
+                if (errorEvent != null)
+                    errorEvent(ex, this, 100);
+                else
+                    throw ex;
+            }
+        }
+        public void CloseThisTab()
+        {
+            try
+            {
+                chromeSetting.ChromeDriver.Close();
+                chromeSetting.ChromeDriver.SwitchTo().Window(chromeSetting.ChromeDriver.WindowHandles.First());
+            }
+            catch (Exception ex)
+            {
+                if (errorEvent != null)
+                    errorEvent(ex, this, 100);
+                else
+                    throw ex;
+            }
         }
         public void Presious()
         {

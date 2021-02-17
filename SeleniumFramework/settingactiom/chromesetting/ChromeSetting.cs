@@ -11,11 +11,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Management;
 using System.Text.RegularExpressions;
+using Bogus;
 
 namespace AmazonSaveAcc.actionmain
 {
     public class ChromeSetting
     {
+        private String[] langList = new String[] { "af", "ak", "sq", "am", "ar", "hy", "az", "eu", "be", "bn", "bh", "bs", "br", "bg", "km", "ca", "ny", "co", "hr", "cs", "da", "nl", "en", "eo", "et", "ee", "fo", "tl", "fi", "fr", "fy", "gl", "ka", "de", "el", "gn", "gu", "ht", "ha", "iw", "hi", "hu", "is", "ig", "id", "ia", "ga", "it", "ja", "jw", "kn", "kk", "rw", "rn", "kg", "ko", "ku", "ky", "lo", "la", "lv", "ln", "lt", "lg", "mk", "mg", "ms", "ml", "mt", "mi", "mr", "mo", "mn", "ne", "no", "nn", "oc", "or", "om", "ps", "fa", "pl", "pa", "qu", "ro", "rm", "ru", "gd", "sr", "sh", "st", "tn", "sn", "sd", "si", "sk", "sl", "so", "es", "su", "sw", "sv", "tg", "ta", "tt", "te", "th", "ti", "to", "tr", "tk", "tw", "ug", "uk", "ur", "uz", "vi", "cy", "wo", "xh", "yi", "yo", "zu" };
         private static Random random = new Random();
         private ChromeDriver chromeDriver;
         private ChromeOptions chromeOptions;
@@ -147,10 +149,11 @@ namespace AmazonSaveAcc.actionmain
                             "headless"
                             });
                         }
-                        chromeOptions.AddArgument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36");
+                        chromeOptions.AddArgument("user-agent=" + new Faker().Internet.UserAgent());
                         chromeOptions.AddArgument("disable-infobars");
                         chromeOptions.AddArgument("window-size=1280,800");
                         chromeOptions.AddArgument("--disable-notifications");
+                        chromeOptions.AddArgument("--lang=" + langList[random.Next(0, langList.Length)]);
                         chromeOptions.AddArgument($"--remote-debugging-port={port}");
                         chromeOptions.AddArgument("--disable-blink-features=AutomationControlled");
                     }
@@ -169,8 +172,9 @@ namespace AmazonSaveAcc.actionmain
                             "headless"
                         });
                     }
-                    chromeOptions.AddArgument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36");
+                    chromeOptions.AddArgument("user-agent=" + new Faker().Internet.UserAgent());
                     chromeOptions.AddArgument("disable-infobars");
+                    chromeOptions.AddArgument("--lang=" + langList[random.Next(0, langList.Length)]);
                     chromeOptions.AddArgument("--disable-blink-features=AutomationControlled");
                 }
                 if (chromeDriver == null)
@@ -232,9 +236,10 @@ namespace AmazonSaveAcc.actionmain
                             "headless"
                             });
                         }
-                        chromeOptions.AddArgument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36");
+                        chromeOptions.AddArgument("user-agent=" + new Faker().Internet.UserAgent());
                         chromeOptions.AddArgument("disable-infobars");
                         chromeOptions.AddArgument("window-size=1280,800");
+                        chromeOptions.AddArgument("--lang="+ langList[random.Next(0,langList.Length)]);
                         chromeOptions.AddArgument("--disable-notifications");
                         chromeOptions.AddArgument($"--remote-debugging-port={port}");
                         chromeOptions.AddArgument("--disable-blink-features=AutomationControlled");
@@ -258,8 +263,9 @@ namespace AmazonSaveAcc.actionmain
                             "headless"
                         });
                     }
-                    chromeOptions.AddArgument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.150 Safari/537.36");
+                    chromeOptions.AddArgument("user-agent="+new Faker().Internet.UserAgent());
                     chromeOptions.AddArgument("disable-infobars");
+                    chromeOptions.AddArgument("--lang=" + langList[random.Next(0, langList.Length)]);
                     chromeOptions.AddArgument("--disable-blink-features=AutomationControlled");
                 }
                 if (chromeDriver == null)

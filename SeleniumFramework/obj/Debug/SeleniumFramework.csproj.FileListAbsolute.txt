@@ -16,3 +16,5 @@ D:\CShaphProject\SeleniumFramework\SeleniumFramework\obj\Debug\SeleniumFramework
 D:\CShaphProject\SeleniumFramework\SeleniumFramework\obj\Debug\SeleniumFramework.csproj.CopyComplete
 D:\CShaphProject\SeleniumFramework\SeleniumFramework\obj\Debug\SeleniumFramework.dll
 D:\CShaphProject\SeleniumFramework\SeleniumFramework\obj\Debug\SeleniumFramework.pdb
+C:\Users\NguyenSonDuong\source\repos\SeleniumFramework\SeleniumFramework\bin\Debug\WebDriver.Support.dll
+C:\Users\NguyenSonDuong\source\repos\SeleniumFramework\SeleniumFramework\bin\Debug\WebDriver.Support.xml

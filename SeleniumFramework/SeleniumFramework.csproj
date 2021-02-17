@@ -66,6 +66,8 @@
     <Compile Include="settingactiom\chromesetting\ChromeSetting.cs" />
     <Compile Include="settingactiom\ConstAll.cs" />
     <Compile Include="settingactiom\ErrorConst.cs" />
+    <Compile Include="settingactiom\firefoxsetting\FireFoxAction.cs" />
+    <Compile Include="settingactiom\firefoxsetting\FirefoxSetting.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

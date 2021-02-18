@@ -11,7 +11,7 @@ namespace AmazonSaveAcc.actionmain
     public delegate void ProcessHandle(Object obj,object sender);
     public delegate void SuccessHandle(Object obj, object sender);
     public delegate void ActionHandle(Object obj, String data);
-    
+    public delegate void ProxyConnectHandle(Object obj, String data);
 
     public class ConstAll
     {

@@ -45,7 +45,6 @@ namespace AmazonSaveAcc.actionmain
             {
                 chromeSetting = ChromeSetting.Build(exe, profile, pathChromeDriver, isHide, isImage);
                 chromeSetting.Js = chromeSetting.ChromeDriver;
-                
             }
             catch (Exception ex)
             {

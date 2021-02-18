@@ -42,7 +42,14 @@ namespace AmazonSaveAcc.actionmain
             Process[] process = Process.GetProcessesByName("chromedriver");
             foreach (Process item in process)
             {
-                item.Kill();
+                try
+                {
+                    item.Kill();
+                }
+                catch
+                {
+
+                }
             }
             Process[] process2 = Process.GetProcessesByName("chrome");
             foreach (Process item in process2)
@@ -67,12 +74,12 @@ namespace AmazonSaveAcc.actionmain
             Process[] process = Process.GetProcessesByName("chromedriver");
             foreach (Process item in process)
             {
-                ShowWindow(item.MainWindowHandle, 0);
+                ShowWindow(item.Handle, 0);
             }
             Process[] process2 = Process.GetProcessesByName("conhost");
             foreach (Process item in process2)
             {
-                ShowWindow(item.MainWindowHandle, 0);
+                ShowWindow(item.Handle, 0);
             }
         }
         public ChromeSetting(ChromeDriver chromeDriver)
@@ -127,6 +134,7 @@ namespace AmazonSaveAcc.actionmain
                     {
                         int port = random.Next(3000, 16000);
                         chromeOptions = new ChromeOptions();
+                        chromeOptions.AcceptInsecureCertificates = true;
                         if (!isImage)
                         {
                             chromeOptions.AddExtension(AppDomain.CurrentDomain.BaseDirectory + "\\blockImage.crx");
@@ -138,7 +146,6 @@ namespace AmazonSaveAcc.actionmain
                             int index = pathProfile.LastIndexOf(@"\");
                             string profile = pathProfile.Remove(0, index + 1);
                             chromeOptions.AddArgument($"user-data-dir={pathProfile.Remove(index)}");
-                            Console.WriteLine("Log on: " + pathProfile);
                             chromeOptions.AddArgument($"--profile-directory={profile}");
 
                         }
@@ -146,7 +153,7 @@ namespace AmazonSaveAcc.actionmain
                         {
                             chromeOptions.AddArguments(new string[]
                             {
-                            "headless"
+                                "headless"
                             });
                         }
                         chromeOptions.AddArgument("user-agent=" + new Faker().Internet.UserAgent());
@@ -155,6 +162,9 @@ namespace AmazonSaveAcc.actionmain
                         chromeOptions.AddArgument("--disable-notifications");
                         chromeOptions.AddArgument("--lang=" + langList[random.Next(0, langList.Length)]);
                         chromeOptions.AddArgument($"--remote-debugging-port={port}");
+                        chromeOptions.AddExcludedArgument("enable-automation");
+                        chromeOptions.AddAdditionalCapability("useAutomationExtension", false);
+                        chromeOptions.AddArgument("ignore-certificate-errors");
                         chromeOptions.AddArgument("--disable-blink-features=AutomationControlled");
                     }
                 }
@@ -172,8 +182,12 @@ namespace AmazonSaveAcc.actionmain
                             "headless"
                         });
                     }
+                    chromeOptions.AcceptInsecureCertificates = true;
                     chromeOptions.AddArgument("user-agent=" + new Faker().Internet.UserAgent());
                     chromeOptions.AddArgument("disable-infobars");
+                    chromeOptions.AddArgument("ignore-certificate-errors");
+                    chromeOptions.AddExcludedArgument("enable-automation");
+                    chromeOptions.AddAdditionalCapability("useAutomationExtension", false);
                     chromeOptions.AddArgument("--lang=" + langList[random.Next(0, langList.Length)]);
                     chromeOptions.AddArgument("--disable-blink-features=AutomationControlled");
                 }
@@ -196,6 +210,7 @@ namespace AmazonSaveAcc.actionmain
             chromeDriver = null;
             chromeOptions = null;
             chromeDriverService = null;
+
             try
             {
                 try
@@ -216,7 +231,22 @@ namespace AmazonSaveAcc.actionmain
                         }
                         if (!String.IsNullOrEmpty(proxy))
                         {
-                            chromeOptions.AddArgument("--proxy-server=" + proxy);
+                            chromeOptions.AcceptInsecureCertificates = true;
+                            //Proxy prox = new Proxy();
+                            //prox.Kind = ProxyKind.Manual;
+                            //prox.IsAutoDetect = false;
+                            //if (proxy.Split(':').Length > 2)
+                            //{
+                            //    prox.SocksUserName = proxy.Split(':')[2];
+                            //    prox.SocksPassword = proxy.Split(':')[3];
+                            //}
+                            //prox.HttpProxy = proxy.Split(':')[0]+":"+ proxy.Split(':')[1];
+                            //chromeOptions.Proxy = prox;
+                            chromeOptions.AddArgument("ignore-certificate-errors");
+                            chromeOptions.AddArguments(new string[]
+                            {
+                                "--proxy-server=socks5://" + proxy
+                            });
                         }
                         if (!String.IsNullOrEmpty(pathEXE))
                             chromeOptions.BinaryLocation = pathEXE;
@@ -227,13 +257,12 @@ namespace AmazonSaveAcc.actionmain
                             chromeOptions.AddArgument($"user-data-dir={pathProfile.Remove(index)}");
                             Console.WriteLine("Log on: " + pathProfile);
                             chromeOptions.AddArgument($"--profile-directory={profile}");
-
                         }
                         if (isHide)
                         {
                             chromeOptions.AddArguments(new string[]
                             {
-                            "headless"
+                                "headless"
                             });
                         }
                         chromeOptions.AddArgument("user-agent=" + new Faker().Internet.UserAgent());
@@ -242,6 +271,8 @@ namespace AmazonSaveAcc.actionmain
                         chromeOptions.AddArgument("--lang="+ langList[random.Next(0,langList.Length)]);
                         chromeOptions.AddArgument("--disable-notifications");
                         chromeOptions.AddArgument($"--remote-debugging-port={port}");
+                        chromeOptions.AddExcludedArgument("enable-automation");
+                        chromeOptions.AddAdditionalCapability("useAutomationExtension", false);
                         chromeOptions.AddArgument("--disable-blink-features=AutomationControlled");
                     }
                 }
@@ -254,7 +285,22 @@ namespace AmazonSaveAcc.actionmain
                     }
                     if (!String.IsNullOrEmpty(proxy))
                     {
-                        chromeOptions.AddArgument("--proxy-server=" + proxy);
+                        //Proxy prox = new Proxy();
+                        //prox.Kind = ProxyKind.Manual;
+                        //prox.IsAutoDetect = false;
+                        //if (proxy.Split(':').Length > 2)
+                        //{
+                        //    prox.SocksUserName = proxy.Split(':')[2];
+                        //    prox.SocksPassword = proxy.Split(':')[3];
+                        //}
+                        //prox.HttpProxy = proxy.Split(':')[0] + ":" + proxy.Split(':')[1];
+                        //chromeOptions.Proxy = prox;
+                        chromeOptions.AcceptInsecureCertificates = true;
+                        chromeOptions.AddArgument("ignore-certificate-errors");
+                        chromeOptions.AddArguments(new string[]
+                        {
+                                "--proxy-server=socks5://" + proxy
+                        });
                     }
                     if (isHide)
                     {
@@ -265,6 +311,8 @@ namespace AmazonSaveAcc.actionmain
                     }
                     chromeOptions.AddArgument("user-agent="+new Faker().Internet.UserAgent());
                     chromeOptions.AddArgument("disable-infobars");
+                    chromeOptions.AddExcludedArgument("enable-automation");
+                    chromeOptions.AddAdditionalCapability("useAutomationExtension", false);
                     chromeOptions.AddArgument("--lang=" + langList[random.Next(0, langList.Length)]);
                     chromeOptions.AddArgument("--disable-blink-features=AutomationControlled");
                 }

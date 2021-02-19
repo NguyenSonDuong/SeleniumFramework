@@ -59,9 +59,9 @@ namespace AmazonSaveAcc.actionmain
         {
             try
             {
-                chromeSetting = ChromeSetting.Build(exe, profile, pathChromeDriver,proxy,isHide, isImage);
+                chromeSetting = ChromeSetting.Build(exe, profile, pathChromeDriver, proxy, isHide, isImage);
                 chromeSetting.Js = chromeSetting.ChromeDriver;
-                
+
             }
             catch (Exception ex)
             {
@@ -150,7 +150,7 @@ namespace AmazonSaveAcc.actionmain
         {
             try
             {
-                foreach(IWebElement item in chromeSetting.ChromeDriver.FindElementsByXPath(className))
+                foreach (IWebElement item in chromeSetting.ChromeDriver.FindElementsByXPath(className))
                 {
                     if (isExactly)
                     {
@@ -222,12 +222,12 @@ namespace AmazonSaveAcc.actionmain
                 int qua = 0;
                 foreach (IWebElement item in chromeSetting.ChromeDriver.FindElementsByXPath(className))
                 {
-                    
+
                     if (isExactly)
                     {
                         if (item.Text.Trim().Equals(stringSame))
                         {
-                            if(qua == pos)
+                            if (qua == pos)
                             {
                                 item.Click();
                             }
@@ -255,7 +255,7 @@ namespace AmazonSaveAcc.actionmain
                     throw ex;
             }
         }
-        public String GetText(String xPath,int pos)
+        public String GetText(String xPath, int pos)
         {
             try
             {
@@ -325,12 +325,12 @@ namespace AmazonSaveAcc.actionmain
                             processHandle(item, this);
                         listResult.Add(item.Text);
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         if (errorEvent != null)
                             errorEvent(ex, this, 100);
                     }
-                    
+
                 }
                 return listResult;
             }
@@ -343,7 +343,7 @@ namespace AmazonSaveAcc.actionmain
             }
             return listResult;
         }
-        public List<String> GetAllAttr(String xPath, String attr , ProcessHandle processHandle = null)
+        public List<String> GetAllAttr(String xPath, String attr, ProcessHandle processHandle = null)
         {
             List<String> listResult = new List<string>();
             try
@@ -410,7 +410,7 @@ namespace AmazonSaveAcc.actionmain
                         else
                             throw ex;
                     }
-                    
+
                 }
             }
             else
@@ -432,7 +432,7 @@ namespace AmazonSaveAcc.actionmain
                         else
                             throw ex;
                     }
-                    
+
                 }
             }
         }
@@ -491,8 +491,9 @@ namespace AmazonSaveAcc.actionmain
             {
                 chromeSetting.ChromeDriver.FindElementByXPath(xPath).Clear();
                 Thread.Sleep(100);
-                for (int i = 0;i < mess.Length; i++){
-                    chromeSetting.ChromeDriver.FindElementByXPath(xPath).SendKeys(mess[i]+"");
+                for (int i = 0; i < mess.Length; i++)
+                {
+                    chromeSetting.ChromeDriver.FindElementByXPath(xPath).SendKeys(mess[i] + "");
                 }
             }
             catch (Exception ex)
@@ -629,28 +630,39 @@ namespace AmazonSaveAcc.actionmain
         {
             try
             {
-                return chromeSetting.ChromeDriver.FindElementByXPath(xPath).Text.Equals(mess);
+                ReadOnlyCollection<IWebElement> list = chromeSetting.ChromeDriver.FindElementsByXPath(xPath);
+                foreach (IWebElement item in list)
+                {
+                    return chromeSetting.ChromeDriver.FindElementByXPath(xPath).Text.Trim().Equals(mess);
+                }
+
             }
             catch (Exception ex)
             {
-                return false;
+
             }
+            return false;
         }
-        public bool CheckXPath(String xPath, String mess,bool isExactly)
+        public bool CheckXPath(String xPath, String mess, bool isExactly)
         {
             try
             {
-                if(isExactly)
-                    return chromeSetting.ChromeDriver.FindElementByXPath(xPath).Text.Trim().Equals(mess);
-                else
-                    return chromeSetting.ChromeDriver.FindElementByXPath(xPath).Text.Trim().Equals(mess);
+                ReadOnlyCollection<IWebElement> list = chromeSetting.ChromeDriver.FindElementsByXPath(xPath);
+                foreach (IWebElement item in list)
+                {
+                    if (isExactly)
+                        return chromeSetting.ChromeDriver.FindElementByXPath(xPath).Text.Trim().Equals(mess);
+                    else
+                        return chromeSetting.ChromeDriver.FindElementByXPath(xPath).Text.Trim().Equals(mess);
+                }
+
             }
             catch (Exception ex)
             {
-                return false;
             }
+            return false;
         }
-        public bool CheckXPath(String xPath, String mess, bool isExactly,int pos)
+        public bool CheckXPath(String xPath, String mess, bool isExactly, int pos)
         {
             try
             {
@@ -785,7 +797,7 @@ namespace AmazonSaveAcc.actionmain
                     errorEvent(ex, this, 100);
                 else
                     throw ex;
-                
+
             }
             return "";
         }
@@ -813,7 +825,7 @@ namespace AmazonSaveAcc.actionmain
                 chromeSetting.ChromeDriver.SwitchTo().Window(chromeSetting.ChromeDriver.WindowHandles.Last());
                 GoToURL(url);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 if (errorEvent != null)
                     errorEvent(ex, this, 100);
@@ -988,13 +1000,13 @@ namespace AmazonSaveAcc.actionmain
             }
             return "";
         }
-        public void SelectOptionValue(String xPath,String value,bool isName = false)
+        public void SelectOptionValue(String xPath, String value, bool isName = false)
         {
             try
             {
 
                 IWebElement select = chromeSetting.ChromeDriver.FindElementByXPath(xPath);
-                if(isName)
+                if (isName)
                     select = chromeSetting.ChromeDriver.FindElementByName(xPath);
                 SelectElement selectElement = new SelectElement(select);
                 selectElement.SelectByValue(value);
@@ -1007,7 +1019,7 @@ namespace AmazonSaveAcc.actionmain
                     throw ex;
             }
         }
-        public void SelectOptionText(String xPath,String value, bool isName = false)
+        public void SelectOptionText(String xPath, String value, bool isName = false)
         {
             try
             {
@@ -1026,7 +1038,7 @@ namespace AmazonSaveAcc.actionmain
                     throw ex;
             }
         }
-        public void SelectOptionIndex(String xPath,int index, bool isName = false)
+        public void SelectOptionIndex(String xPath, int index, bool isName = false)
         {
             try
             {
@@ -1096,7 +1108,8 @@ namespace AmazonSaveAcc.actionmain
                 {
                     return 0;
                 }
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 if (errorEvent != null)
                     errorEvent(ex, this, 100);

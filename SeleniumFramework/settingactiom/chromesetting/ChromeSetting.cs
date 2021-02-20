@@ -17,7 +17,7 @@ namespace AmazonSaveAcc.actionmain
 {
     public class ChromeSetting
     {
-        private String[] langList = new String[] {  "en","ja","vn" };
+        private String[] langList = new String[] {  "en","vn" };
         //private String[] langList = new String[] { "af", "ak", "sq", "am", "ar", "hy", "az", "eu", "be", "bn", "bh", "bs", "br", "bg", "km", "ca", "ny", "co", "hr", "cs", "da", "nl", "en", "eo", "et", "ee", "fo", "tl", "fi", "fr", "fy", "gl", "ka", "de", "el", "gn", "gu", "ht", "ha", "iw", "hi", "hu", "is", "ig", "id", "ia", "ga", "it", "ja", "jw", "kn", "kk", "rw", "rn", "kg", "ko", "ku", "ky", "lo", "la", "lv", "ln", "lt", "lg", "mk", "mg", "ms", "ml", "mt", "mi", "mr", "mo", "mn", "ne", "no", "nn", "oc", "or", "om", "ps", "fa", "pl", "pa", "qu", "ro", "rm", "ru", "gd", "sr", "sh", "st", "tn", "sn", "sd", "si", "sk", "sl", "so", "es", "su", "sw", "sv", "tg", "ta", "tt", "te", "th", "ti", "to", "tr", "tk", "tw", "ug", "uk", "ur", "uz", "vi", "cy", "wo", "xh", "yi", "yo", "zu" };
         private static Random random = new Random();
         private ChromeDriver chromeDriver;
@@ -211,7 +211,6 @@ namespace AmazonSaveAcc.actionmain
             chromeDriver = null;
             chromeOptions = null;
             chromeDriverService = null;
-
             try
             {
                 try
@@ -233,16 +232,6 @@ namespace AmazonSaveAcc.actionmain
                         if (!String.IsNullOrEmpty(proxy))
                         {
                             chromeOptions.AcceptInsecureCertificates = true;
-                            //Proxy prox = new Proxy();
-                            //prox.Kind = ProxyKind.Manual;
-                            //prox.IsAutoDetect = false;
-                            //if (proxy.Split(':').Length > 2)
-                            //{
-                            //    prox.SocksUserName = proxy.Split(':')[2];
-                            //    prox.SocksPassword = proxy.Split(':')[3];
-                            //}
-                            //prox.HttpProxy = proxy.Split(':')[0]+":"+ proxy.Split(':')[1];
-                            //chromeOptions.Proxy = prox;
                             chromeOptions.AddArgument("ignore-certificate-errors");
                             chromeOptions.AddArguments(new string[]
                             {
@@ -286,16 +275,6 @@ namespace AmazonSaveAcc.actionmain
                     }
                     if (!String.IsNullOrEmpty(proxy))
                     {
-                        //Proxy prox = new Proxy();
-                        //prox.Kind = ProxyKind.Manual;
-                        //prox.IsAutoDetect = false;
-                        //if (proxy.Split(':').Length > 2)
-                        //{
-                        //    prox.SocksUserName = proxy.Split(':')[2];
-                        //    prox.SocksPassword = proxy.Split(':')[3];
-                        //}
-                        //prox.HttpProxy = proxy.Split(':')[0] + ":" + proxy.Split(':')[1];
-                        //chromeOptions.Proxy = prox;
                         chromeOptions.AcceptInsecureCertificates = true;
                         chromeOptions.AddArgument("ignore-certificate-errors");
                         chromeOptions.AddArguments(new string[]

@@ -158,7 +158,6 @@ namespace AmazonSaveAcc.actionmain
                             });
                         }
                         chromeOptions.AddArgument("user-agent=" + new Faker().Internet.UserAgent());
-                        chromeOptions.AddArgument("disable-infobars");
                         chromeOptions.AddArgument("window-size=1280,800");
                         chromeOptions.AddArgument("--disable-notifications");
                         chromeOptions.AddArgument("--lang=" + langList[random.Next(0, langList.Length)]);
@@ -185,7 +184,6 @@ namespace AmazonSaveAcc.actionmain
                     }
                     chromeOptions.AcceptInsecureCertificates = true;
                     chromeOptions.AddArgument("user-agent=" + new Faker().Internet.UserAgent());
-                    chromeOptions.AddArgument("disable-infobars");
                     chromeOptions.AddArgument("ignore-certificate-errors");
                     chromeOptions.AddExcludedArgument("enable-automation");
                     chromeOptions.AddAdditionalCapability("useAutomationExtension", false);
@@ -256,7 +254,6 @@ namespace AmazonSaveAcc.actionmain
                             });
                         }
                         chromeOptions.AddArgument("user-agent=" + new Faker().Internet.UserAgent());
-                        chromeOptions.AddArgument("disable-infobars");
                         chromeOptions.AddArgument("window-size=1280,800");
                         chromeOptions.AddArgument("--lang="+ langList[random.Next(0,langList.Length)]);
                         chromeOptions.AddArgument("--disable-notifications");
@@ -290,7 +287,6 @@ namespace AmazonSaveAcc.actionmain
                         });
                     }
                     chromeOptions.AddArgument("user-agent="+new Faker().Internet.UserAgent());
-                    chromeOptions.AddArgument("disable-infobars");
                     chromeOptions.AddExcludedArgument("enable-automation");
                     chromeOptions.AddAdditionalCapability("useAutomationExtension", false);
                     chromeOptions.AddArgument("--lang=" + langList[random.Next(0, langList.Length)]);

@@ -508,6 +508,8 @@ namespace AmazonSaveAcc.actionmain
         {
             try
             {
+                chromeSetting.ChromeDriver.FindElementById(id).Click();
+                Thread.Sleep(100);
                 chromeSetting.ChromeDriver.FindElementById(id).Clear();
                 Thread.Sleep(100);
                 chromeSetting.ChromeDriver.FindElementById(id).SendKeys(mess);

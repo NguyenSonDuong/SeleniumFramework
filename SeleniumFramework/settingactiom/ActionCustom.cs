@@ -17,7 +17,7 @@ namespace AmazonSaveAcc.actionmain
     public delegate void RunInvoker();
     public class ActionCustom
     {
-        public static String PATH_SAVE_LOG = "log.ini";
+        public static String PATH_SAVE_LOG = AppDomain.CurrentDomain.BaseDirectory+ "\\log.ini";
         [DllImport("user32.dll")]
         public static extern void SwitchToThisWindow(IntPtr hWnd, bool turnon);
 

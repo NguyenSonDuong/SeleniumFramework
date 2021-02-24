@@ -17,16 +17,19 @@ namespace AmazonSaveAcc.actionmain
     public delegate void RunInvoker();
     public class ActionCustom
     {
-        public static String PATH_SAVE_LOG = AppDomain.CurrentDomain.BaseDirectory+ "\\log.ini";
+        public static String PATH_SAVE_LOG = AppDomain.CurrentDomain.BaseDirectory + "\\log.ini";
         [DllImport("user32.dll")]
         public static extern void SwitchToThisWindow(IntPtr hWnd, bool turnon);
+        [DllImport("user32.dll")]
+        public static extern int FindWindow(string lpClassName, string lpWindowName);
+        [DllImport("user32.dll")]
+        private static extern int ShowWindow(IntPtr hwnd, int nCmdShow);
 
-        
         public static void Invoker(Control control, RunInvoker runInvoker)
         {
             control.Invoke(new MethodInvoker(runInvoker));
         }
-        public static void RemoveAllEvent(Object obj,String field)
+        public static void RemoveAllEvent(Object obj, String field)
         {
             FieldInfo f1 = typeof(Object).GetField(field,
            BindingFlags.Static | BindingFlags.NonPublic);
@@ -34,16 +37,15 @@ namespace AmazonSaveAcc.actionmain
             object obj2 = f1.GetValue(obj);
             PropertyInfo pi = obj.GetType().GetProperty("Events",
                 BindingFlags.NonPublic | BindingFlags.Instance);
-
             EventHandlerList list = (EventHandlerList)pi.GetValue(obj, null);
             list.RemoveHandler(obj2, list[obj2]);
         }
-        public static void AddLogToRicText(RichTextBox richText,String mess,Color color)
+        public static void AddLogToRicText(RichTextBox richText, String mess, Color color)
         {
             Invoker(richText, () =>
             {
                 richText.SelectionColor = color;
-                richText.AppendText(DateTime.Now.ToShortDateString()+" "+DateTime.Now.ToShortTimeString() + " :" + mess +"\n");
+                richText.AppendText(DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString() + " :" + mess + "\n");
             });
         }
         public static void SaveObject(String path, Object item, char split)
@@ -58,7 +60,7 @@ namespace AmazonSaveAcc.actionmain
         public static void SetValueObject(String path, Object item, char split)
         {
             List<String> list = ReadListToFile(path);
-            foreach(String it in list)
+            foreach (String it in list)
             {
                 String[] value = it.Split(split);
                 if (value.Length < 2)
@@ -84,7 +86,7 @@ namespace AmazonSaveAcc.actionmain
                         property.SetValue(item, Double.Parse(value[1]), null);
                         break;
                     case TypeCode.String:
-                        property.SetValue(item, value[1]+"", null);
+                        property.SetValue(item, value[1] + "", null);
                         break;
                     case TypeCode.Object:
                         property.SetValue(item, null, null);
@@ -94,7 +96,7 @@ namespace AmazonSaveAcc.actionmain
                         break;
 
                 }
-                
+
             }
         }
         public static void CopyFilesRecursively(DirectoryInfo source, DirectoryInfo target)
@@ -103,9 +105,9 @@ namespace AmazonSaveAcc.actionmain
                 CopyFilesRecursively(dir, target.CreateSubdirectory(dir.Name));
             foreach (FileInfo file in source.GetFiles())
                 file.CopyTo(Path.Combine(target.FullName, file.Name));
-                //Copy(file.FullName,Path.Combine(target.FullName, file.Name));
+            //Copy(file.FullName,Path.Combine(target.FullName, file.Name));
         }
-        public static void Copy(String pathSource,String pathEnd)
+        public static void Copy(String pathSource, String pathEnd)
         {
             using (var inputFile = new FileStream(
                 pathSource,
@@ -124,14 +126,31 @@ namespace AmazonSaveAcc.actionmain
                 }
             }
         }
-        
-        public static void WriteListToFile(String path, Object[] listObject, String split = "\n", bool isAppend = false)
+
+        public static void WriteListToFile(String path, String[] listObject, String split = "\n", bool isAppend = false)
         {
             try
             {
-                if(!isAppend)
+                if (!isAppend)
                     File.WriteAllText(path, "");
-                foreach (Object item in listObject)
+                foreach (String item in listObject)
+                {
+                    if (!String.IsNullOrEmpty(item))
+                        File.AppendAllText(path, item.ToString() + split);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public static void WriteListToFile(String path, object[] listObject, String split = "\n", bool isAppend = false)
+        {
+            try
+            {
+                if (!isAppend)
+                    File.WriteAllText(path, "");
+                foreach (object item in listObject)
                 {
                     File.AppendAllText(path, item.ToString() + split);
                 }
@@ -149,7 +168,8 @@ namespace AmazonSaveAcc.actionmain
                 String[] listObject = File.ReadAllText(path).Split(split1);
                 foreach (String item in listObject)
                 {
-                    listout.Add(item);
+                    if (!String.IsNullOrEmpty(item))
+                        listout.Add(item);
                 }
                 return listout;
             }
@@ -162,17 +182,18 @@ namespace AmazonSaveAcc.actionmain
         {
             try
             {
-                File.AppendAllText(PATH_SAVE_LOG, DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString() + mess +"\n");
-            }catch(Exception ex)
+                File.AppendAllText(PATH_SAVE_LOG, DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString() + mess + "\n");
+            }
+            catch (Exception ex)
             {
                 errorHandle(ex, "", 900);
             }
         }
 
-        public static Thread MakeThread(ThreadStart runInvoker)
+        public static Thread MakeThread(ThreadStart runInvoker, bool isBackground = true)
         {
             Thread thread = new Thread(runInvoker);
-            thread.IsBackground = true;
+            thread.IsBackground = isBackground;
             thread.Start();
             return thread;
         }

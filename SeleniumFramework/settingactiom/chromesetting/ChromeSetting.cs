@@ -105,16 +105,16 @@ namespace AmazonSaveAcc.actionmain
                 switch (typeElement)
                 {
                     case TypeElement.XPATH:
-                        webElement = webDriver.Until(ExpectedConditions.ElementToBeClickable(By.XPath(text)));
+                        webElement = webDriver.Until(ExpectedConditions.ElementIsVisible(By.XPath(text)));
                         break;
                     case TypeElement.CLASSNAME:
-                        webElement = webDriver.Until(ExpectedConditions.ElementToBeClickable(By.ClassName(text)));
+                        webElement = webDriver.Until(ExpectedConditions.ElementIsVisible(By.ClassName(text)));
                         break;
                     case TypeElement.NAME:
-                        webElement = webDriver.Until(ExpectedConditions.ElementToBeClickable(By.Name(text)));
+                        webElement = webDriver.Until(ExpectedConditions.ElementIsVisible(By.Name(text)));
                         break;
                     case TypeElement.ID:
-                        webElement = webDriver.Until(ExpectedConditions.ElementToBeClickable(By.Id(text)));
+                        webElement = webDriver.Until(ExpectedConditions.ElementIsVisible(By.Id(text)));
                         break;
                 }
                 if(webElement.Displayed)

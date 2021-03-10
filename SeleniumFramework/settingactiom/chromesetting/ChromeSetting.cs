@@ -12,12 +12,14 @@ using System.Threading.Tasks;
 using System.Management;
 using System.Text.RegularExpressions;
 using Bogus;
+using SeleniumFramework.model;
+using OpenQA.Selenium.Support.UI;
 
 namespace AmazonSaveAcc.actionmain
 {
     public class ChromeSetting
     {
-        private String[] langList = new String[] { "en","vn","ja" };
+        private String[] langList = new String[] { "en", "vn" };
         //private String[] langList = new String[] { "af", "ak", "sq", "am", "ar", "hy", "az", "eu", "be", "bn", "bh", "bs", "br", "bg", "km", "ca", "ny", "co", "hr", "cs", "da", "nl", "en", "eo", "et", "ee", "fo", "tl", "fi", "fr", "fy", "gl", "ka", "de", "el", "gn", "gu", "ht", "ha", "iw", "hi", "hu", "is", "ig", "id", "ia", "ga", "it", "ja", "jw", "kn", "kk", "rw", "rn", "kg", "ko", "ku", "ky", "lo", "la", "lv", "ln", "lt", "lg", "mk", "mg", "ms", "ml", "mt", "mi", "mr", "mo", "mn", "ne", "no", "nn", "oc", "or", "om", "ps", "fa", "pl", "pa", "qu", "ro", "rm", "ru", "gd", "sr", "sh", "st", "tn", "sn", "sd", "si", "sk", "sl", "so", "es", "su", "sw", "sv", "tg", "ta", "tt", "te", "th", "ti", "to", "tr", "tk", "tw", "ug", "uk", "ur", "uz", "vi", "cy", "wo", "xh", "yi", "yo", "zu" };
         private static Random random = new Random();
         private ChromeDriver chromeDriver;
@@ -93,6 +95,38 @@ namespace AmazonSaveAcc.actionmain
             this.chromeOptions = chromeOptions;
             this.chromeDriverService = chromeDriverService;
         }
+
+        public IWebElement WaitElement(String text, int timeoutInSeconds, TypeElement typeElement)
+        {
+            try
+            {
+                WebDriverWait webDriver = new WebDriverWait(chromeDriver, TimeSpan.FromSeconds(timeoutInSeconds));
+                IWebElement webElement = null ;
+                switch (typeElement)
+                {
+                    case TypeElement.XPATH:
+                        webElement = webDriver.Until(ExpectedConditions.ElementIsVisible(By.XPath(text)));
+                        break;
+                    case TypeElement.CLASSNAME:
+                        webElement = webDriver.Until(ExpectedConditions.ElementIsVisible(By.ClassName(text)));
+                        break;
+                    case TypeElement.NAME:
+                        webElement = webDriver.Until(ExpectedConditions.ElementIsVisible(By.Name(text)));
+                        break;
+                    case TypeElement.ID:
+                        webElement = webDriver.Until(ExpectedConditions.ElementIsVisible(By.Id(text)));
+                        break;
+                }
+                if(webElement.Displayed)
+                    return webElement;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return null;
+        }
+
         public void GetHandler()
         {
             System.Diagnostics.Process[] processes = System.Diagnostics.Process.GetProcessesByName("chrome");
@@ -116,7 +150,7 @@ namespace AmazonSaveAcc.actionmain
             }
         }
         // Khơi tạo chrome driver với các cấu hình tiêu chuẩn
-        public ChromeDriver BuildChromePortable(String pathEXE = "", String pathProfile = "", String pathChromeDriver = "",bool isHide = false, bool isImage = false)
+        public ChromeDriver BuildChromePortable(String pathEXE = "", String pathProfile = "", String pathChromeDriver = "", bool isHide = false, bool isImage = false)
         {
             chromeDriver = null;
             chromeOptions = null;
@@ -158,7 +192,6 @@ namespace AmazonSaveAcc.actionmain
                             });
                         }
                         chromeOptions.AddArgument("user-agent=" + new Faker().Internet.UserAgent());
-                        chromeOptions.AddArgument("disable-infobars");
                         chromeOptions.AddArgument("window-size=1280,800");
                         chromeOptions.AddArgument("--disable-notifications");
                         chromeOptions.AddArgument("--lang=" + langList[random.Next(0, langList.Length)]);
@@ -176,7 +209,7 @@ namespace AmazonSaveAcc.actionmain
                     {
                         chromeOptions.AddExtension(AppDomain.CurrentDomain.BaseDirectory + "\\blockImage.crx");
                     }
-                    if(isHide)
+                    if (isHide)
                     {
                         chromeOptions.AddArguments(new string[]
                         {
@@ -185,7 +218,6 @@ namespace AmazonSaveAcc.actionmain
                     }
                     chromeOptions.AcceptInsecureCertificates = true;
                     chromeOptions.AddArgument("user-agent=" + new Faker().Internet.UserAgent());
-                    chromeOptions.AddArgument("disable-infobars");
                     chromeOptions.AddArgument("ignore-certificate-errors");
                     chromeOptions.AddExcludedArgument("enable-automation");
                     chromeOptions.AddAdditionalCapability("useAutomationExtension", false);
@@ -211,7 +243,6 @@ namespace AmazonSaveAcc.actionmain
             chromeDriver = null;
             chromeOptions = null;
             chromeDriverService = null;
-
             try
             {
                 try
@@ -233,16 +264,6 @@ namespace AmazonSaveAcc.actionmain
                         if (!String.IsNullOrEmpty(proxy))
                         {
                             chromeOptions.AcceptInsecureCertificates = true;
-                            //Proxy prox = new Proxy();
-                            //prox.Kind = ProxyKind.Manual;
-                            //prox.IsAutoDetect = false;
-                            //if (proxy.Split(':').Length > 2)
-                            //{
-                            //    prox.SocksUserName = proxy.Split(':')[2];
-                            //    prox.SocksPassword = proxy.Split(':')[3];
-                            //}
-                            //prox.HttpProxy = proxy.Split(':')[0]+":"+ proxy.Split(':')[1];
-                            //chromeOptions.Proxy = prox;
                             chromeOptions.AddArgument("ignore-certificate-errors");
                             chromeOptions.AddArguments(new string[]
                             {
@@ -267,9 +288,8 @@ namespace AmazonSaveAcc.actionmain
                             });
                         }
                         chromeOptions.AddArgument("user-agent=" + new Faker().Internet.UserAgent());
-                        chromeOptions.AddArgument("disable-infobars");
                         chromeOptions.AddArgument("window-size=1280,800");
-                        chromeOptions.AddArgument("--lang="+ langList[random.Next(0,langList.Length)]);
+                        chromeOptions.AddArgument("--lang=" + langList[random.Next(0, langList.Length)]);
                         chromeOptions.AddArgument("--disable-notifications");
                         chromeOptions.AddArgument($"--remote-debugging-port={port}");
                         chromeOptions.AddExcludedArgument("enable-automation");
@@ -286,16 +306,6 @@ namespace AmazonSaveAcc.actionmain
                     }
                     if (!String.IsNullOrEmpty(proxy))
                     {
-                        //Proxy prox = new Proxy();
-                        //prox.Kind = ProxyKind.Manual;
-                        //prox.IsAutoDetect = false;
-                        //if (proxy.Split(':').Length > 2)
-                        //{
-                        //    prox.SocksUserName = proxy.Split(':')[2];
-                        //    prox.SocksPassword = proxy.Split(':')[3];
-                        //}
-                        //prox.HttpProxy = proxy.Split(':')[0] + ":" + proxy.Split(':')[1];
-                        //chromeOptions.Proxy = prox;
                         chromeOptions.AcceptInsecureCertificates = true;
                         chromeOptions.AddArgument("ignore-certificate-errors");
                         chromeOptions.AddArguments(new string[]
@@ -310,8 +320,7 @@ namespace AmazonSaveAcc.actionmain
                             "headless"
                         });
                     }
-                    chromeOptions.AddArgument("user-agent="+new Faker().Internet.UserAgent());
-                    chromeOptions.AddArgument("disable-infobars");
+                    chromeOptions.AddArgument("user-agent=" + new Faker().Internet.UserAgent());
                     chromeOptions.AddExcludedArgument("enable-automation");
                     chromeOptions.AddAdditionalCapability("useAutomationExtension", false);
                     chromeOptions.AddArgument("--lang=" + langList[random.Next(0, langList.Length)]);
@@ -331,7 +340,7 @@ namespace AmazonSaveAcc.actionmain
                 throw e;
             }
         }
-        
+
 
         public static ChromeSetting Build(String pathEXE, String pathProfile, String pathChromeDriver, bool isImage = true)
         {
@@ -343,19 +352,19 @@ namespace AmazonSaveAcc.actionmain
         public static ChromeSetting Build(String pathEXE, String pathProfile, String pathChromeDriver, bool isHide = false, bool isImage = true)
         {
             ChromeSetting chromeSetting = new ChromeSetting();
-            chromeSetting.BuildChromePortable(pathEXE, pathProfile, pathChromeDriver,isHide, isImage);
+            chromeSetting.BuildChromePortable(pathEXE, pathProfile, pathChromeDriver, isHide, isImage);
             return chromeSetting;
         }
-        public static ChromeSetting Build(String pathEXE, String pathProfile, String pathChromeDriver, String proxy = "",bool isImage = true)
+        public static ChromeSetting Build(String pathEXE, String pathProfile, String pathChromeDriver, String proxy = "", bool isImage = true)
         {
             ChromeSetting chromeSetting = new ChromeSetting();
-            chromeSetting.BuildChromePortable(pathEXE, pathProfile, pathChromeDriver,proxy, isImage);
+            chromeSetting.BuildChromePortable(pathEXE, pathProfile, pathChromeDriver, proxy, isImage);
             return chromeSetting;
         }
         public static ChromeSetting Build(String pathEXE, String pathProfile, String pathChromeDriver, String proxy = "", bool isHide = false, bool isImage = true)
         {
             ChromeSetting chromeSetting = new ChromeSetting();
-            chromeSetting.BuildChromePortable(pathEXE, pathProfile, pathChromeDriver,proxy, isHide, isImage);
+            chromeSetting.BuildChromePortable(pathEXE, pathProfile, pathChromeDriver, proxy, isHide, isImage);
             return chromeSetting;
         }
         public void ClickToButtonXpath(String xPath)

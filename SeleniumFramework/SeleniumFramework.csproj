@@ -60,6 +60,7 @@
     <Compile Include="model\EnumActionSelenium.cs" />
     <Compile Include="model\EnumActionTypeBySelenium.cs" />
     <Compile Include="model\EnumActionTypeSelenium.cs" />
+    <Compile Include="model\TypeElement.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>

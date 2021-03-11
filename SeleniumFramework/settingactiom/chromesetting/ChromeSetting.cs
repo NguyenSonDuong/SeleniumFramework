@@ -14,7 +14,6 @@ using System.Text.RegularExpressions;
 using Bogus;
 using SeleniumFramework.model;
 using OpenQA.Selenium.Support.UI;
-
 namespace AmazonSaveAcc.actionmain
 {
     public class ChromeSetting
@@ -101,7 +100,7 @@ namespace AmazonSaveAcc.actionmain
             try
             {
                 WebDriverWait webDriver = new WebDriverWait(chromeDriver, TimeSpan.FromSeconds(timeoutInSeconds));
-                IWebElement webElement = null ;
+                IWebElement webElement = null;
                 switch (typeElement)
                 {
                     case TypeElement.XPATH:
@@ -117,7 +116,7 @@ namespace AmazonSaveAcc.actionmain
                         webElement = webDriver.Until(ExpectedConditions.ElementIsVisible(By.Id(text)));
                         break;
                 }
-                if(webElement.Displayed)
+                if (webElement.Displayed)
                     return webElement;
             }
             catch (Exception ex)
@@ -260,15 +259,33 @@ namespace AmazonSaveAcc.actionmain
                         if (!isImage)
                         {
                             chromeOptions.AddExtension(AppDomain.CurrentDomain.BaseDirectory + "\\blockImage.crx");
+
                         }
                         if (!String.IsNullOrEmpty(proxy))
                         {
-                            chromeOptions.AcceptInsecureCertificates = true;
-                            chromeOptions.AddArgument("ignore-certificate-errors");
-                            chromeOptions.AddArguments(new string[]
+                            if (proxy.EndsWith(".zip"))
                             {
-                                "--proxy-server=socks5://" + proxy
-                            });
+                                chromeOptions.AddExtension(AppDomain.CurrentDomain.BaseDirectory + "\\" + proxy);
+                            }
+                            else
+                            {
+                                chromeOptions.AcceptInsecureCertificates = true;
+                                chromeOptions.AddArgument("ignore-certificate-errors");
+                                Proxy proxy2 = new Proxy();
+                                proxy2.Kind = ProxyKind.Direct;
+                                proxy2.IsAutoDetect = false;
+                                proxy2.HttpProxy = proxy.Split(':')[0] + ":" + proxy.Split(':')[1];
+                                if (proxy.Split(':').Length > 2)
+                                {
+                                    proxy2.SocksUserName = proxy.Split(':')[2];
+                                    proxy2.SocksPassword = proxy.Split(':')[3];
+                                }
+                                chromeOptions.Proxy = proxy2;
+                                //chromeOptions.AddArguments(new string[]
+                                //{
+                                //"--proxy-server=socks5://" + proxy
+                                //});
+                            }
                         }
                         if (!String.IsNullOrEmpty(pathEXE))
                             chromeOptions.BinaryLocation = pathEXE;
@@ -307,6 +324,11 @@ namespace AmazonSaveAcc.actionmain
                     if (!String.IsNullOrEmpty(proxy))
                     {
                         chromeOptions.AcceptInsecureCertificates = true;
+                        Proxy proxy2 = new Proxy();
+                        proxy2.Kind = ProxyKind.Manual;
+                        proxy2.IsAutoDetect = false;
+                        proxy2.HttpProxy = proxy;
+                        chromeOptions.Proxy = proxy2;
                         chromeOptions.AddArgument("ignore-certificate-errors");
                         chromeOptions.AddArguments(new string[]
                         {

@@ -22,3 +22,5 @@ D:\CShaphProject\SeleniumFramework\SeleniumFramework\bin\Debug\Bogus.dll
 D:\CShaphProject\SeleniumFramework\SeleniumFramework\bin\Debug\WebDriver.Support.dll
 D:\CShaphProject\SeleniumFramework\SeleniumFramework\bin\Debug\Bogus.xml
 D:\CShaphProject\SeleniumFramework\SeleniumFramework\bin\Debug\WebDriver.Support.xml
+C:\Users\NguyenSonDuong\source\repos\SeleniumFramework\SeleniumFramework\bin\Debug\Bogus.dll
+C:\Users\NguyenSonDuong\source\repos\SeleniumFramework\SeleniumFramework\bin\Debug\Bogus.xml

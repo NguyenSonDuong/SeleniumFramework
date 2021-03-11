@@ -14,6 +14,7 @@ using System.Text.RegularExpressions;
 using Bogus;
 using SeleniumFramework.model;
 using OpenQA.Selenium.Support.UI;
+
 namespace AmazonSaveAcc.actionmain
 {
     public class ChromeSetting
@@ -259,32 +260,25 @@ namespace AmazonSaveAcc.actionmain
                         if (!isImage)
                         {
                             chromeOptions.AddExtension(AppDomain.CurrentDomain.BaseDirectory + "\\blockImage.crx");
-
                         }
                         if (!String.IsNullOrEmpty(proxy))
                         {
-                            if (proxy.EndsWith(".zip"))
+                            chromeOptions.AcceptInsecureCertificates = true;
+                            chromeOptions.AddArgument("ignore-certificate-errors");
+                            if (proxy.Split(':').Length > 2)
                             {
-                                chromeOptions.AddExtension(AppDomain.CurrentDomain.BaseDirectory + "\\" + proxy);
+                                chromeOptions.AddArguments(new string[]
+                                {
+                                    "--proxy-server=" + proxy.Split(':')[2]+":"+proxy.Split(':')[3]+"@"+proxy.Split(':')[0]+":"+proxy.Split(':')[1]
+                                }); 
                             }
                             else
                             {
-                                chromeOptions.AcceptInsecureCertificates = true;
-                                chromeOptions.AddArgument("ignore-certificate-errors");
-                                Proxy proxy2 = new Proxy();
-                                proxy2.Kind = ProxyKind.Direct;
-                                proxy2.IsAutoDetect = false;
-                                proxy2.HttpProxy = proxy.Split(':')[0] + ":" + proxy.Split(':')[1];
-                                if (proxy.Split(':').Length > 2)
+
+                                chromeOptions.AddArguments(new string[]
                                 {
-                                    proxy2.SocksUserName = proxy.Split(':')[2];
-                                    proxy2.SocksPassword = proxy.Split(':')[3];
-                                }
-                                chromeOptions.Proxy = proxy2;
-                                //chromeOptions.AddArguments(new string[]
-                                //{
-                                //"--proxy-server=socks5://" + proxy
-                                //});
+                                "--proxy-server=" + proxy
+                                });
                             }
                         }
                         if (!String.IsNullOrEmpty(pathEXE))
@@ -324,16 +318,22 @@ namespace AmazonSaveAcc.actionmain
                     if (!String.IsNullOrEmpty(proxy))
                     {
                         chromeOptions.AcceptInsecureCertificates = true;
-                        Proxy proxy2 = new Proxy();
-                        proxy2.Kind = ProxyKind.Manual;
-                        proxy2.IsAutoDetect = false;
-                        proxy2.HttpProxy = proxy;
-                        chromeOptions.Proxy = proxy2;
                         chromeOptions.AddArgument("ignore-certificate-errors");
-                        chromeOptions.AddArguments(new string[]
+                        if (proxy.Split(':').Length > 2)
                         {
-                                "--proxy-server=socks5://" + proxy
-                        });
+                            chromeOptions.AddArguments(new string[]
+                            {
+                                    "--proxy-server=" + proxy.Split(':')[2]+":"+proxy.Split(':')[3]+"@"+proxy.Split(':')[0]+":"+proxy.Split(':')[1]
+                            });
+                        }
+                        else
+                        {
+
+                            chromeOptions.AddArguments(new string[]
+                            {
+                                "--proxy-server=" + proxy
+                            });
+                        }
                     }
                     if (isHide)
                     {

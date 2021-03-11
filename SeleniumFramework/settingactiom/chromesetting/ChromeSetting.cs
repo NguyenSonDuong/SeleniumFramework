@@ -101,7 +101,7 @@ namespace AmazonSaveAcc.actionmain
             try
             {
                 WebDriverWait webDriver = new WebDriverWait(chromeDriver, TimeSpan.FromSeconds(timeoutInSeconds));
-                IWebElement webElement = null ;
+                IWebElement webElement = null;
                 switch (typeElement)
                 {
                     case TypeElement.XPATH:
@@ -117,7 +117,7 @@ namespace AmazonSaveAcc.actionmain
                         webElement = webDriver.Until(ExpectedConditions.ElementIsVisible(By.Id(text)));
                         break;
                 }
-                if(webElement.Displayed)
+                if (webElement.Displayed)
                     return webElement;
             }
             catch (Exception ex)
@@ -265,10 +265,21 @@ namespace AmazonSaveAcc.actionmain
                         {
                             chromeOptions.AcceptInsecureCertificates = true;
                             chromeOptions.AddArgument("ignore-certificate-errors");
-                            chromeOptions.AddArguments(new string[]
+                            if (proxy.Split(':').Length > 2)
                             {
-                                "--proxy-server=socks5://" + proxy
-                            });
+                                chromeOptions.AddArguments(new string[]
+                                {
+                                    "--proxy-server=" + proxy.Split(':')[2]+":"+proxy.Split(':')[3]+"@"+proxy.Split(':')[0]+":"+proxy.Split(':')[1]
+                                }); 
+                            }
+                            else
+                            {
+
+                                chromeOptions.AddArguments(new string[]
+                                {
+                                "--proxy-server=" + proxy
+                                });
+                            }
                         }
                         if (!String.IsNullOrEmpty(pathEXE))
                             chromeOptions.BinaryLocation = pathEXE;
@@ -308,10 +319,21 @@ namespace AmazonSaveAcc.actionmain
                     {
                         chromeOptions.AcceptInsecureCertificates = true;
                         chromeOptions.AddArgument("ignore-certificate-errors");
-                        chromeOptions.AddArguments(new string[]
+                        if (proxy.Split(':').Length > 2)
                         {
-                                "--proxy-server=socks5://" + proxy
-                        });
+                            chromeOptions.AddArguments(new string[]
+                            {
+                                    "--proxy-server=" + proxy.Split(':')[2]+":"+proxy.Split(':')[3]+"@"+proxy.Split(':')[0]+":"+proxy.Split(':')[1]
+                            });
+                        }
+                        else
+                        {
+
+                            chromeOptions.AddArguments(new string[]
+                            {
+                                "--proxy-server=" + proxy
+                            });
+                        }
                     }
                     if (isHide)
                     {

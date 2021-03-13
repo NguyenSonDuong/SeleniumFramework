@@ -390,6 +390,41 @@ namespace AmazonSaveAcc.actionmain
             }
             return listResult;
         }
+        public void GetAllAttr(String xPath, String attr, int start , ProcessHandle processHandle = null)
+        {
+            List<String> listResult = new List<string>();
+            try
+            {
+                IWebElement webElement = chromeSetting.WaitElement(xPath, TimeWait, TypeElement.XPATH);
+                ReadOnlyCollection<IWebElement> listElement = chromeSetting.ChromeDriver.FindElementsByXPath(xPath);
+                if (start >= listElement.Count)
+                    return;
+                for (int i = start; i< listElement.Count; i++)
+                {
+                    if (i >= listElement.Count)
+                        return;
+                    try
+                    {
+                        if (processHandle != null)
+                            processHandle(listElement[i], this);
+                    }
+                    catch (Exception ex)
+                    {
+                        if (errorEvent != null)
+                            errorEvent(ex, this, 100);
+                    }
+                }
+                return;
+            }
+            catch (Exception ex)
+            {
+                if (errorEvent != null)
+                    errorEvent(ex, this, 100);
+                else
+                    throw ex;
+            }
+            return;
+        }
 
         public void ClickID(String id)
         {
@@ -663,6 +698,28 @@ namespace AmazonSaveAcc.actionmain
                 foreach (IWebElement item in list)
                 {
                     return chromeSetting.ChromeDriver.FindElementByXPath(xPath).Text.Trim().Equals(mess);
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return false;
+        }//https://www.pinterest.cl/AshleyLive97/_created/
+        public bool CheckXPath(String xPath, int pos)
+        {
+            try
+            {
+                ReadOnlyCollection<IWebElement> list = chromeSetting.ChromeDriver.FindElementsByXPath(xPath);
+                try
+                {
+                    IWebElement web = list[pos];
+                    return true;
+                }
+                catch(IndexOutOfRangeException ex)
+                {
+                    return false;
                 }
 
             }

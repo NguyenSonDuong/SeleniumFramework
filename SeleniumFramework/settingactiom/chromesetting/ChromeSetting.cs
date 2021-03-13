@@ -26,6 +26,7 @@ namespace AmazonSaveAcc.actionmain
         private ChromeOptions chromeOptions;
         private ChromeDriverService chromeDriverService;
         private IJavaScriptExecutor js;
+        public int PortNumber = 0;
         [DllImport("user32.dll")]
         public static extern int FindWindow(string lpClassName, string lpWindowName);
         [DllImport("user32.dll")]
@@ -126,6 +127,36 @@ namespace AmazonSaveAcc.actionmain
             }
             return null;
         }
+        public IWebElement WaitElement(String text, int pos,int timeoutInSeconds, TypeElement typeElement)
+        {
+            try
+            {
+                WebDriverWait webDriver = new WebDriverWait(chromeDriver, TimeSpan.FromSeconds(timeoutInSeconds));
+                IWebElement webElement = null;
+                switch (typeElement)
+                {
+                    case TypeElement.XPATH:
+                        webElement = webDriver.Until(ExpectedConditions.ElementIsVisible(By.XPath(text)));
+                        break;
+                    case TypeElement.CLASSNAME:
+                        webElement = webDriver.Until(ExpectedConditions.ElementIsVisible(By.ClassName(text)));
+                        break;
+                    case TypeElement.NAME:
+                        webElement = webDriver.Until(ExpectedConditions.ElementIsVisible(By.Name(text)));
+                        break;
+                    case TypeElement.ID:
+                        webElement = webDriver.Until(ExpectedConditions.ElementIsVisible(By.Id(text)));
+                        break;
+                }
+                if (webElement.Displayed)
+                    return webElement;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return null;
+        }
 
         public void GetHandler()
         {
@@ -168,6 +199,7 @@ namespace AmazonSaveAcc.actionmain
                     if (chromeOptions == null)
                     {
                         int port = random.Next(3000, 16000);
+                        PortNumber = port;
                         chromeOptions = new ChromeOptions();
                         chromeOptions.AcceptInsecureCertificates = true;
                         if (!isImage)
@@ -249,13 +281,16 @@ namespace AmazonSaveAcc.actionmain
                 {
                     if (chromeDriverService == null)
                     {
+                        
                         chromeDriverService = ChromeDriverService.CreateDefaultService();
                         chromeDriverService.HideCommandPromptWindow = true;
                         chromeDriverService.SuppressInitialDiagnosticInformation = true;
+                        
                     }
                     if (chromeOptions == null)
                     {
                         int port = random.Next(3000, 16000);
+                        PortNumber = port;
                         chromeOptions = new ChromeOptions();
                         if (!isImage)
                         {

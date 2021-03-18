@@ -14,6 +14,7 @@ using System.Text.RegularExpressions;
 using Bogus;
 using SeleniumFramework.model;
 using OpenQA.Selenium.Support.UI;
+using System.IO;
 
 namespace AmazonSaveAcc.actionmain
 {
@@ -180,6 +181,7 @@ namespace AmazonSaveAcc.actionmain
                 }
             }
         }
+
         // Khơi tạo chrome driver với các cấu hình tiêu chuẩn
         public ChromeDriver BuildChromePortable(String pathEXE = "", String pathProfile = "", String pathChromeDriver = "", bool isHide = false, bool isImage = false)
         {
@@ -300,12 +302,18 @@ namespace AmazonSaveAcc.actionmain
                         {
                             chromeOptions.AcceptInsecureCertificates = true;
                             chromeOptions.AddArgument("ignore-certificate-errors");
-                            if (proxy.Split(':').Length > 2)
+                            if (proxy.Split(':').Length < 1)
                             {
-                                chromeOptions.AddArguments(new string[]
-                                {
-                                    "--proxy-server=" + proxy.Split(':')[2]+":"+proxy.Split(':')[3]+"@"+proxy.Split(':')[0]+":"+proxy.Split(':')[1]
-                                }); 
+                                String background = File.ReadAllText("background.js");
+                                String manifest = File.ReadAllText("manifest.json");
+                                Regex regex = new Regex("%[\S]+%");
+                                MatchCollection matchCollection = regex.Matches(background);
+                                
+
+                                //chromeOptions.AddArguments(new string[]
+                                //{
+                                //    "--proxy-server=" + proxy.Split(':')[2]+":"+proxy.Split(':')[3]+"@"+proxy.Split(':')[0]+":"+proxy.Split(':')[1]
+                                //}); 
                             }
                             else
                             {
@@ -356,10 +364,10 @@ namespace AmazonSaveAcc.actionmain
                         chromeOptions.AddArgument("ignore-certificate-errors");
                         if (proxy.Split(':').Length > 2)
                         {
-                            chromeOptions.AddArguments(new string[]
-                            {
-                                    "--proxy-server=" + proxy.Split(':')[2]+":"+proxy.Split(':')[3]+"@"+proxy.Split(':')[0]+":"+proxy.Split(':')[1]
-                            });
+                            //chromeOptions.AddArguments(new string[]
+                            //{
+                            //        "--proxy-server=" + proxy.Split(':')[2]+":"+proxy.Split(':')[3]+"@"+proxy.Split(':')[0]+":"+proxy.Split(':')[1]
+                            //});
                         }
                         else
                         {

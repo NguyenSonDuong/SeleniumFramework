@@ -166,6 +166,20 @@ namespace AmazonSaveAcc.actionmain
                     throw ex;
             }
         }
+        public void ClickXPathNo(string xPath, int pos)
+        {
+            try
+            {
+                chromeSetting.ChromeDriver.FindElementsByXPath(xPath)[pos].Click();
+            }
+            catch (Exception ex)
+            {
+                if (errorEvent != null)
+                    errorEvent(ex, this, 100);
+                else
+                    throw ex;
+            }
+        }
         public void ClickXPath(String xPath, String stringSame, bool isExactly)
         {
             try

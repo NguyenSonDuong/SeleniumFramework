@@ -6,27 +6,23 @@
             host: "%HOST%",
             port: parseInt(%PORT%)
         },
-        bypassList: ["localhost"]
+        bypassList: ["foobar.com"]
     }
 };
 
 chrome.proxy.settings.set({ value: config, scope: "regular" }, function () { });
 
-var username = "%USERNAME%";
-var password = "%PASSWORD%";
-var retry = 3;
-
 function callbackFn(details) {
     return {
         authCredentials: {
-            username: username ,
-            password: password 
+            username: "%USERNAME%",
+            password: "%PASSWORD%"
         }
     };
 }
 
 chrome.webRequest.onAuthRequired.addListener(
-            callbackFn,
-            {urls: ["<all_urls>"]},
-            ['blocking']
+    callbackFn,
+    { urls: ["https://stackoverflow.com/"] },
+    ['blocking']
 );

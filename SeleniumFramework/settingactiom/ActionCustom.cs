@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -39,6 +40,38 @@ namespace AmazonSaveAcc.actionmain
                 BindingFlags.NonPublic | BindingFlags.Instance);
             EventHandlerList list = (EventHandlerList)pi.GetValue(obj, null);
             list.RemoveHandler(obj2, list[obj2]);
+        }
+
+        public static void ZipFile(String[] listPath, String pathOutput)
+        {
+            using (var memoryStream = new MemoryStream())
+            {
+                using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
+                {
+                    var file = archive.CreateEntry("background.js");
+                    using (var entryStream = file.Open())
+                    {
+                        using (var streamWriter = new StreamWriter(entryStream))
+                        {
+                            streamWriter.Write(listPath[0]);
+                        }
+                    }
+
+                    file = archive.CreateEntry("manifest.json");
+                    using (var entryStream = file.Open())
+                    {
+                        using (var streamWriter = new StreamWriter(entryStream))
+                        {
+                            streamWriter.Write(listPath[1]);
+                        }
+                    }
+                }
+                using (var fileStream = new FileStream(pathOutput, FileMode.Create))
+                {
+                    memoryStream.Seek(0, SeekOrigin.Begin);
+                    memoryStream.CopyTo(fileStream);
+                }
+            }
         }
         public static void AddLogToRicText(RichTextBox richText, String mess, Color color)
         {

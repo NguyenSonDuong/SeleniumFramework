@@ -20,6 +20,7 @@ namespace AmazonSaveAcc.actionmain
 {
     public class ChromeSetting
     {
+        public static String PathToApplication = AppDomain.CurrentDomain.BaseDirectory;
         private String[] langList = new String[] { "en", "vn" };
         //private String[] langList = new String[] { "af", "ak", "sq", "am", "ar", "hy", "az", "eu", "be", "bn", "bh", "bs", "br", "bg", "km", "ca", "ny", "co", "hr", "cs", "da", "nl", "en", "eo", "et", "ee", "fo", "tl", "fi", "fr", "fy", "gl", "ka", "de", "el", "gn", "gu", "ht", "ha", "iw", "hi", "hu", "is", "ig", "id", "ia", "ga", "it", "ja", "jw", "kn", "kk", "rw", "rn", "kg", "ko", "ku", "ky", "lo", "la", "lv", "ln", "lt", "lg", "mk", "mg", "ms", "ml", "mt", "mi", "mr", "mo", "mn", "ne", "no", "nn", "oc", "or", "om", "ps", "fa", "pl", "pa", "qu", "ro", "rm", "ru", "gd", "sr", "sh", "st", "tn", "sn", "sd", "si", "sk", "sl", "so", "es", "su", "sw", "sv", "tg", "ta", "tt", "te", "th", "ti", "to", "tr", "tk", "tw", "ug", "uk", "ur", "uz", "vi", "cy", "wo", "xh", "yi", "yo", "zu" };
         private static Random random = new Random();
@@ -128,7 +129,7 @@ namespace AmazonSaveAcc.actionmain
             }
             return null;
         }
-        public IWebElement WaitElement(String text, int pos,int timeoutInSeconds, TypeElement typeElement)
+        public IWebElement WaitElement(String text, int pos, int timeoutInSeconds, TypeElement typeElement)
         {
             try
             {
@@ -283,11 +284,11 @@ namespace AmazonSaveAcc.actionmain
                 {
                     if (chromeDriverService == null)
                     {
-                        
+
                         chromeDriverService = ChromeDriverService.CreateDefaultService();
                         chromeDriverService.HideCommandPromptWindow = true;
                         chromeDriverService.SuppressInitialDiagnosticInformation = true;
-                        
+
                     }
                     if (chromeOptions == null)
                     {
@@ -298,22 +299,37 @@ namespace AmazonSaveAcc.actionmain
                         {
                             chromeOptions.AddExtension(AppDomain.CurrentDomain.BaseDirectory + "\\blockImage.crx");
                         }
+                        Console.WriteLine("Setting nay 1");
                         if (!String.IsNullOrEmpty(proxy))
                         {
                             chromeOptions.AcceptInsecureCertificates = true;
                             chromeOptions.AddArgument("ignore-certificate-errors");
-                            if (proxy.Split(':').Length < 1)
+                            if (proxy.Split(':').Length > 2)
                             {
-                                String background = File.ReadAllText("background.js");
-                                String manifest = File.ReadAllText("manifest.json");
-                                Regex regex = new Regex("%[\S]+%");
-                                MatchCollection matchCollection = regex.Matches(background);
-                                
-
-                                //chromeOptions.AddArguments(new string[]
-                                //{
-                                //    "--proxy-server=" + proxy.Split(':')[2]+":"+proxy.Split(':')[3]+"@"+proxy.Split(':')[0]+":"+proxy.Split(':')[1]
-                                //}); 
+                                String fileName = PathToApplication + "\\" + proxy.Split(':')[0] + proxy.Split(':')[1] + ".zip";
+                                if (File.Exists(fileName))
+                                {
+                                    chromeOptions.AddExtension(fileName);
+                                }
+                                else
+                                {
+                                    String background = File.ReadAllText(PathToApplication + "\\background.js");
+                                    String manifest = File.ReadAllText(PathToApplication + "\\manifest.json");
+                                    background = background.Replace("%HOST%", proxy.Split(':')[0]);
+                                    background = background.Replace("%PORT%", proxy.Split(':')[1]);
+                                    background = background.Replace("%USERNAME%", proxy.Split(':')[2]);
+                                    background = background.Replace("%PASSWORD%", proxy.Split(':')[3]);
+                                    Console.WriteLine(background);
+                                    try
+                                    {
+                                        ActionCustom.ZipFile(new string[] { background, manifest }, fileName);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        throw ex;
+                                    }
+                                    chromeOptions.AddExtension(fileName);
+                                }
                             }
                             else
                             {
@@ -364,10 +380,31 @@ namespace AmazonSaveAcc.actionmain
                         chromeOptions.AddArgument("ignore-certificate-errors");
                         if (proxy.Split(':').Length > 2)
                         {
-                            //chromeOptions.AddArguments(new string[]
-                            //{
-                            //        "--proxy-server=" + proxy.Split(':')[2]+":"+proxy.Split(':')[3]+"@"+proxy.Split(':')[0]+":"+proxy.Split(':')[1]
-                            //});
+                            String fileName = PathToApplication + "\\" + proxy.Split(':')[0] + proxy.Split(':')[1] + ".zip";
+                            if (File.Exists(fileName))
+                            {
+                                chromeOptions.AddExtension(fileName);
+                            }
+                            else
+                            {
+                                String background = File.ReadAllText(PathToApplication + "\\background.js");
+                                String manifest = File.ReadAllText(PathToApplication + "\\manifest.json");
+                                background = background.Replace("%HOST%", proxy.Split(':')[0]);
+                                background = background.Replace("%PORT%", proxy.Split(':')[1]);
+                                background = background.Replace("%USERNAME%", proxy.Split(':')[2]);
+                                background = background.Replace("%PASSWORD%", proxy.Split(':')[3]);
+                                Console.WriteLine(background);
+                                try
+                                {
+                                    ActionCustom.ZipFile(new string[] { background, manifest }, fileName);
+                                }
+                                catch (Exception ex)
+                                {
+                                    throw ex;
+                                }
+                                chromeOptions.AddExtension(fileName);
+                            }
+
                         }
                         else
                         {

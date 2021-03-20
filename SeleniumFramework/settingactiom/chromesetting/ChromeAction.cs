@@ -609,6 +609,23 @@ namespace AmazonSaveAcc.actionmain
                     throw ex;
             }
         }
+        public void SendKeyIDNo(String id, String mess)
+        {
+            try
+            {
+               
+                
+                Thread.Sleep(100);
+                chromeSetting.ChromeDriver.FindElementById(id).SendKeys(mess);
+            }
+            catch (Exception ex)
+            {
+                if (errorEvent != null)
+                    errorEvent(ex, this, 100);
+                else
+                    throw ex;
+            }
+        }
         public void SendKeyClass(String className, String[] mess)
         {
             try

@@ -226,7 +226,7 @@ namespace AmazonSaveAcc.actionmain
                                 "headless"
                             });
                         }
-                        chromeOptions.AddArgument("user-agent=" + new Faker().Internet.UserAgent());
+                        //chromeOptions.AddArgument("user-agent=" + new Faker().Internet.UserAgent());
                         chromeOptions.AddArgument("window-size=1280,800");
                         chromeOptions.AddArgument("--disable-notifications");
                         chromeOptions.AddArgument("--lang=" + langList[random.Next(0, langList.Length)]);
@@ -252,7 +252,7 @@ namespace AmazonSaveAcc.actionmain
                         });
                     }
                     chromeOptions.AcceptInsecureCertificates = true;
-                    chromeOptions.AddArgument("user-agent=" + new Faker().Internet.UserAgent());
+                    //chromeOptions.AddArgument("user-agent=" + new Faker().Internet.UserAgent());
                     chromeOptions.AddArgument("ignore-certificate-errors");
                     chromeOptions.AddExcludedArgument("enable-automation");
                     chromeOptions.AddAdditionalCapability("useAutomationExtension", false);
@@ -299,7 +299,6 @@ namespace AmazonSaveAcc.actionmain
                         {
                             chromeOptions.AddExtension(AppDomain.CurrentDomain.BaseDirectory + "\\blockImage.crx");
                         }
-                        Console.WriteLine("Setting nay 1");
                         if (!String.IsNullOrEmpty(proxy))
                         {
                             chromeOptions.AcceptInsecureCertificates = true;
@@ -357,7 +356,7 @@ namespace AmazonSaveAcc.actionmain
                                 "headless"
                             });
                         }
-                        chromeOptions.AddArgument("user-agent=" + new Faker().Internet.UserAgent());
+                        //chromeOptions.AddArgument("user-agent=" + new Faker().Internet.UserAgent());
                         chromeOptions.AddArgument("window-size=1280,800");
                         chromeOptions.AddArgument("--lang=" + langList[random.Next(0, langList.Length)]);
                         chromeOptions.AddArgument("--disable-notifications");
@@ -422,7 +421,7 @@ namespace AmazonSaveAcc.actionmain
                             "headless"
                         });
                     }
-                    chromeOptions.AddArgument("user-agent=" + new Faker().Internet.UserAgent());
+                    //chromeOptions.AddArgument("user-agent=" + new Faker().Internet.UserAgent());
                     chromeOptions.AddExcludedArgument("enable-automation");
                     chromeOptions.AddAdditionalCapability("useAutomationExtension", false);
                     chromeOptions.AddArgument("--lang=" + langList[random.Next(0, langList.Length)]);

@@ -129,59 +129,7 @@ namespace AmazonSaveAcc.actionmain
             }
             return null;
         }
-        public IWebElement WaitElement(String text, int pos, int timeoutInSeconds, TypeElement typeElement)
-        {
-            try
-            {
-                WebDriverWait webDriver = new WebDriverWait(chromeDriver, TimeSpan.FromSeconds(timeoutInSeconds));
-                IWebElement webElement = null;
-                switch (typeElement)
-                {
-                    case TypeElement.XPATH:
-                        webElement = webDriver.Until(ExpectedConditions.ElementIsVisible(By.XPath(text)));
-                        break;
-                    case TypeElement.CLASSNAME:
-                        webElement = webDriver.Until(ExpectedConditions.ElementIsVisible(By.ClassName(text)));
-                        break;
-                    case TypeElement.NAME:
-                        webElement = webDriver.Until(ExpectedConditions.ElementIsVisible(By.Name(text)));
-                        break;
-                    case TypeElement.ID:
-                        webElement = webDriver.Until(ExpectedConditions.ElementIsVisible(By.Id(text)));
-                        break;
-                }
-                if (webElement.Displayed)
-                    return webElement;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            return null;
-        }
 
-        public void GetHandler()
-        {
-            System.Diagnostics.Process[] processes = System.Diagnostics.Process.GetProcessesByName("chrome");
-            for (int p = 0; p < processes.Length; p++)
-            {
-                ManagementObjectSearcher commandLineSearcher = new ManagementObjectSearcher("SELECT CommandLine FROM Win32_Process WHERE ProcessId = " + processes[p].Id);
-                String commandLine = "";
-                foreach (ManagementObject commandLineObject in commandLineSearcher.Get())
-                {
-                    commandLine += (String)commandLineObject["CommandLine"];
-                }
-
-                String script_pid_str = (new Regex("--scriptpid-(.+?) ")).Match(commandLine).Groups[1].Value;
-
-                if (!script_pid_str.Equals("") && Convert.ToInt32(script_pid_str).Equals(System.Diagnostics.Process.GetCurrentProcess().Id))
-                {
-                    CurrentBrowserPID = processes[p].Id;
-                    CurrentBrowserHwnd = processes[p].MainWindowHandle;
-                    break;
-                }
-            }
-        }
 
         // Khơi tạo chrome driver với các cấu hình tiêu chuẩn
         public ChromeDriver BuildChromePortable(String pathEXE = "", String pathProfile = "", String pathChromeDriver = "", bool isHide = false, bool isImage = false)
@@ -228,13 +176,15 @@ namespace AmazonSaveAcc.actionmain
                         }
                         //chromeOptions.AddArgument("user-agent=" + new Faker().Internet.UserAgent());
                         chromeOptions.AddArgument("window-size=1280,800");
-                        chromeOptions.AddArgument("--disable-notifications");
                         chromeOptions.AddArgument("--lang=" + langList[random.Next(0, langList.Length)]);
                         chromeOptions.AddArgument($"--remote-debugging-port={port}");
                         chromeOptions.AddExcludedArgument("enable-automation");
+                        chromeOptions.AddArgument("--disable-notifications");
                         chromeOptions.AddAdditionalCapability("useAutomationExtension", false);
-                        chromeOptions.AddArgument("ignore-certificate-errors");
                         chromeOptions.AddArgument("--disable-blink-features=AutomationControlled");
+                        chromeOptions.AddArgument("ignore-certificate-errors");
+                        chromeOptions.AddUserProfilePreference("credentials_enable_service", false);
+                        chromeOptions.AddUserProfilePreference("profile.password_manager_enabled", false);
                     }
                 }
                 catch (Exception)
@@ -258,6 +208,8 @@ namespace AmazonSaveAcc.actionmain
                     chromeOptions.AddAdditionalCapability("useAutomationExtension", false);
                     chromeOptions.AddArgument("--lang=" + langList[random.Next(0, langList.Length)]);
                     chromeOptions.AddArgument("--disable-blink-features=AutomationControlled");
+                    chromeOptions.AddUserProfilePreference("credentials_enable_service", false);
+                    chromeOptions.AddUserProfilePreference("profile.password_manager_enabled", false);
                 }
                 if (chromeDriver == null)
                 {
@@ -332,7 +284,6 @@ namespace AmazonSaveAcc.actionmain
                             }
                             else
                             {
-
                                 chromeOptions.AddArguments(new string[]
                                 {
                                 "--proxy-server=" + proxy
@@ -364,6 +315,8 @@ namespace AmazonSaveAcc.actionmain
                         chromeOptions.AddExcludedArgument("enable-automation");
                         chromeOptions.AddAdditionalCapability("useAutomationExtension", false);
                         chromeOptions.AddArgument("--disable-blink-features=AutomationControlled");
+                        chromeOptions.AddUserProfilePreference("credentials_enable_service", false);
+                        chromeOptions.AddUserProfilePreference("profile.password_manager_enabled", false);
                     }
                 }
                 catch (Exception)
@@ -426,6 +379,8 @@ namespace AmazonSaveAcc.actionmain
                     chromeOptions.AddAdditionalCapability("useAutomationExtension", false);
                     chromeOptions.AddArgument("--lang=" + langList[random.Next(0, langList.Length)]);
                     chromeOptions.AddArgument("--disable-blink-features=AutomationControlled");
+                    chromeOptions.AddUserProfilePreference("credentials_enable_service", false);
+                    chromeOptions.AddUserProfilePreference("profile.password_manager_enabled", false);
                 }
                 if (chromeDriver == null)
                 {

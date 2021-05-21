@@ -43,7 +43,7 @@ namespace AmazonSaveAcc.actionmain
         public ChromeSetting ChromeSetting { get => chromeSetting; set => chromeSetting = value; }
         public bool IsRun { get => isRun; set => isRun = value; }
         public int TimeWait { get => timeWait; set => timeWait = value; }
-
+        
         public void Init(String exe, String profile, String pathChromeDriver, bool isHide = false, bool isImage = true)
         {
             try
@@ -570,6 +570,26 @@ namespace AmazonSaveAcc.actionmain
                     throw ex;
             }
         }
+
+        public void SendKeyXPath(String xPath, int pos, String mess)
+        {
+            try
+            {
+
+
+                chromeSetting.ChromeDriver.FindElementsByXPath(xPath)[pos].Clear();
+                Thread.Sleep(100);
+                chromeSetting.ChromeDriver.FindElementsByXPath(xPath)[pos].SendKeys(mess);
+
+            }
+            catch (Exception ex)
+            {
+                if (errorEvent != null)
+                    errorEvent(ex, this, 100);
+                else
+                    throw ex;
+            }
+        }
         public void SendKeyXPath(String xPath, String mess, int step)
         {
             try
@@ -997,7 +1017,7 @@ namespace AmazonSaveAcc.actionmain
             }
 
         }
-        public int getScrollHeight()
+        public int GetScrollHeight()
         {
             try
             {

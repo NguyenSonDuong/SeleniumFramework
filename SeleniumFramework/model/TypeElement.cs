@@ -9,8 +9,10 @@ namespace SeleniumFramework.model
     public enum TypeElement
     {
         XPATH,
-        CLASSNAME,
+        CLASS,
         ID,
-        NAME
+        NAME,
+        JS,
+        JS2
     }
 }

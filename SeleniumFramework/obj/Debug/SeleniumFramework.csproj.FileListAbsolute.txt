@@ -26,3 +26,7 @@ D:\CShaphProject\SeleniumFramework\SeleniumFramework\obj\Debug\SeleniumFramework
 D:\CShaphProject\SeleniumFramework\SeleniumFramework\obj\Debug\SeleniumFramework.pdb
 D:\CShaphProject\SeleniumFramework\SeleniumFramework\bin\Debug\resourc\background.js
 D:\CShaphProject\SeleniumFramework\SeleniumFramework\bin\Debug\resourc\manifest.json
+C:\Users\MinhHoangJSC\Documents\CShaphProject\CShaphProject\SeleniumFramework\SeleniumFramework\obj\Debug\SeleniumFramework.csproj.AssemblyReference.cache
+C:\Users\MinhHoangJSC\Documents\CShaphProject\CShaphProject\SeleniumFramework\SeleniumFramework\obj\Debug\SeleniumFramework.csproj.CoreCompileInputs.cache
+C:\Users\MinhHoangJSC\Documents\CShaphProject\CShaphProject\SeleniumFramework\SeleniumFramework\obj\Debug\SeleniumFramework.dll
+C:\Users\MinhHoangJSC\Documents\CShaphProject\CShaphProject\SeleniumFramework\SeleniumFramework\obj\Debug\SeleniumFramework.pdb

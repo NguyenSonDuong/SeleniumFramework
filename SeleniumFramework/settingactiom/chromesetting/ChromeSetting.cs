@@ -15,34 +15,50 @@ using Bogus;
 using SeleniumFramework.model;
 using OpenQA.Selenium.Support.UI;
 using System.IO;
+using SeleniumFramework.settingactiom.chromesetting;
+using Renci.SshNet;
 
 namespace AmazonSaveAcc.actionmain
 {
     public class ChromeSetting
     {
+        #region property
         public static String PathToApplication = AppDomain.CurrentDomain.BaseDirectory;
-        private String[] langList = new String[] { "en", "vn" };
-        //private String[] langList = new String[] { "af", "ak", "sq", "am", "ar", "hy", "az", "eu", "be", "bn", "bh", "bs", "br", "bg", "km", "ca", "ny", "co", "hr", "cs", "da", "nl", "en", "eo", "et", "ee", "fo", "tl", "fi", "fr", "fy", "gl", "ka", "de", "el", "gn", "gu", "ht", "ha", "iw", "hi", "hu", "is", "ig", "id", "ia", "ga", "it", "ja", "jw", "kn", "kk", "rw", "rn", "kg", "ko", "ku", "ky", "lo", "la", "lv", "ln", "lt", "lg", "mk", "mg", "ms", "ml", "mt", "mi", "mr", "mo", "mn", "ne", "no", "nn", "oc", "or", "om", "ps", "fa", "pl", "pa", "qu", "ro", "rm", "ru", "gd", "sr", "sh", "st", "tn", "sn", "sd", "si", "sk", "sl", "so", "es", "su", "sw", "sv", "tg", "ta", "tt", "te", "th", "ti", "to", "tr", "tk", "tw", "ug", "uk", "ur", "uz", "vi", "cy", "wo", "xh", "yi", "yo", "zu" };
+        private String windowsSize;
+        private String lang;
+        private bool disableSavePassword;
+        private bool isHide;
+        private bool isDisableImage;
+        private String proxy;
+        private String typeProxy = "SSH";
+        private String exe;
+        private String profile;
+        private SshClient sshClient;
         private static Random random = new Random();
+
         private ChromeDriver chromeDriver;
         private ChromeOptions chromeOptions;
         private ChromeDriverService chromeDriverService;
-        private IJavaScriptExecutor js;
-        public int PortNumber = 0;
-        [DllImport("user32.dll")]
-        public static extern int FindWindow(string lpClassName, string lpWindowName);
-        [DllImport("user32.dll")]
-        private static extern int ShowWindow(IntPtr hwnd, int nCmdShow);
+
         public ChromeDriver ChromeDriver { get => chromeDriver; set => chromeDriver = value; }
         public ChromeOptions ChromeOptions { get => chromeOptions; set => chromeOptions = value; }
         public ChromeDriverService ChromeDriverService { get => chromeDriverService; set => chromeDriverService = value; }
-        public IJavaScriptExecutor Js { get => js; set => js = value; }
-        public IntPtr CurrentBrowserHwnd = IntPtr.Zero;
-        public int CurrentBrowserPID = -1;
+        public string WindowsSize { get => windowsSize; set => windowsSize = value; }
+        public string Lang { get => lang; set => lang = value; }
+        public bool DisableSavePassword { get => disableSavePassword; set => disableSavePassword = value; }
+        public bool IsHide { get => isHide; set => isHide = value; }
+        public bool IsDisableImage { get => isDisableImage; set => isDisableImage = value; }
+        public string Proxy { get => proxy; set => proxy = value; }
+        public string Exe { get => exe; set => exe = value; }
+        public string Profile { get => profile; set => profile = value; }
+        public string TypeProxy { get => typeProxy; set => typeProxy = value; }
+        #endregion
+
         public ChromeSetting()
         {
 
         }
+
         public static void CloseAllChrome()
         {
             Process[] process = Process.GetProcessesByName("chromedriver");
@@ -71,23 +87,7 @@ namespace AmazonSaveAcc.actionmain
 
             }
         }
-        public static void HideAllCommandLine()
-        {
-            foreach (Process item in Process.GetProcesses())
-            {
-                Console.WriteLine(item.ProcessName);
-            }
-            Process[] process = Process.GetProcessesByName("chromedriver");
-            foreach (Process item in process)
-            {
-                ShowWindow(item.Handle, 0);
-            }
-            Process[] process2 = Process.GetProcessesByName("conhost");
-            foreach (Process item in process2)
-            {
-                ShowWindow(item.Handle, 0);
-            }
-        }
+
         public ChromeSetting(ChromeDriver chromeDriver)
         {
             this.chromeDriver = chromeDriver;
@@ -99,124 +99,64 @@ namespace AmazonSaveAcc.actionmain
             this.chromeDriverService = chromeDriverService;
         }
 
-        public IWebElement WaitElement(String text, int timeoutInSeconds, TypeElement typeElement)
-        {
-            try
-            {
-                WebDriverWait webDriver = new WebDriverWait(chromeDriver, TimeSpan.FromSeconds(timeoutInSeconds));
-                IWebElement webElement = null;
-                switch (typeElement)
-                {
-                    case TypeElement.XPATH:
-                        webElement = webDriver.Until(ExpectedConditions.ElementIsVisible(By.XPath(text)));
-                        break;
-                    case TypeElement.CLASSNAME:
-                        webElement = webDriver.Until(ExpectedConditions.ElementIsVisible(By.ClassName(text)));
-                        break;
-                    case TypeElement.NAME:
-                        webElement = webDriver.Until(ExpectedConditions.ElementIsVisible(By.Name(text)));
-                        break;
-                    case TypeElement.ID:
-                        webElement = webDriver.Until(ExpectedConditions.ElementIsVisible(By.Id(text)));
-                        break;
-                }
-                if (webElement.Displayed)
-                    return webElement;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            return null;
-        }
-
-
         // Khơi tạo chrome driver với các cấu hình tiêu chuẩn
-        public ChromeDriver BuildChromePortable(String pathEXE = "", String pathProfile = "", String pathChromeDriver = "", bool isHide = false, bool isImage = false)
+        public ChromeDriver BuildChrome()
         {
             chromeDriver = null;
             chromeOptions = null;
             chromeDriverService = null;
             try
             {
-                try
+                if (chromeDriverService == null)
                 {
-                    if (chromeDriverService == null)
-                    {
-                        chromeDriverService = ChromeDriverService.CreateDefaultService();
-                        chromeDriverService.HideCommandPromptWindow = true;
-                        chromeDriverService.SuppressInitialDiagnosticInformation = true;
-                    }
-                    if (chromeOptions == null)
-                    {
-                        int port = random.Next(3000, 16000);
-                        PortNumber = port;
-                        chromeOptions = new ChromeOptions();
-                        chromeOptions.AcceptInsecureCertificates = true;
-                        if (!isImage)
-                        {
-                            chromeOptions.AddExtension(AppDomain.CurrentDomain.BaseDirectory + "\\blockImage.crx");
-                        }
-                        if (!String.IsNullOrEmpty(pathEXE))
-                            chromeOptions.BinaryLocation = pathEXE;
-                        if (!String.IsNullOrEmpty(pathProfile))
-                        {
-                            int index = pathProfile.LastIndexOf(@"\");
-                            string profile = pathProfile.Remove(0, index + 1);
-                            chromeOptions.AddArgument($"user-data-dir={pathProfile.Remove(index)}");
-                            chromeOptions.AddArgument($"--profile-directory={profile}");
-
-                        }
-                        if (isHide)
-                        {
-                            chromeOptions.AddArguments(new string[]
-                            {
-                                "headless"
-                            });
-                        }
-                        //chromeOptions.AddArgument("user-agent=" + new Faker().Internet.UserAgent());
-                        chromeOptions.AddArgument("window-size=1280,800");
-                        chromeOptions.AddArgument("--lang=" + langList[random.Next(0, langList.Length)]);
-                        chromeOptions.AddArgument($"--remote-debugging-port={port}");
-                        chromeOptions.AddExcludedArgument("enable-automation");
-                        chromeOptions.AddArgument("--disable-notifications");
-                        chromeOptions.AddAdditionalCapability("useAutomationExtension", false);
-                        chromeOptions.AddArgument("--disable-blink-features=AutomationControlled");
-                        chromeOptions.AddArgument("ignore-certificate-errors");
-                        chromeOptions.AddUserProfilePreference("credentials_enable_service", false);
-                        chromeOptions.AddUserProfilePreference("profile.password_manager_enabled", false);
-                    }
+                    chromeDriverService = ChromeDriverService.CreateDefaultService();
+                    chromeDriverService.HideCommandPromptWindow = true;
+                    chromeDriverService.SuppressInitialDiagnosticInformation = true;
                 }
-                catch (Exception)
+                if (chromeOptions == null)
                 {
+                    int port = random.Next(3000, 16000);
                     chromeOptions = new ChromeOptions();
-                    if (!isImage)
+                    chromeOptions.AcceptInsecureCertificates = true;
+                    if (isDisableImage)
                     {
                         chromeOptions.AddExtension(AppDomain.CurrentDomain.BaseDirectory + "\\blockImage.crx");
+                    }
+                    if (!String.IsNullOrEmpty(exe))
+                        chromeOptions.BinaryLocation = exe;
+                    if (!String.IsNullOrEmpty(profile))
+                    {
+                        int index = profile.LastIndexOf(@"\");
+                        string profile2 = profile.Remove(0, index + 1);
+                        chromeOptions.AddArgument($"user-data-dir={profile.Remove(index)}");
+                        chromeOptions.AddArgument($"--profile-directory={profile2}");
                     }
                     if (isHide)
                     {
                         chromeOptions.AddArguments(new string[]
                         {
-                            "headless"
+                                "headless"
                         });
                     }
+                    chromeOptions = new ChromeOptions();
                     chromeOptions.AcceptInsecureCertificates = true;
-                    //chromeOptions.AddArgument("user-agent=" + new Faker().Internet.UserAgent());
-                    chromeOptions.AddArgument("ignore-certificate-errors");
+                    if (!String.IsNullOrEmpty(windowsSize))
+                        chromeOptions.AddArgument("window-size=" + windowsSize);
+                    if (!String.IsNullOrEmpty(lang))
+                        chromeOptions.AddArgument("--lang=" + lang);
+                    chromeOptions.AddArgument($"--remote-debugging-port={port}");
                     chromeOptions.AddExcludedArgument("enable-automation");
+                    chromeOptions.AddArgument("--disable-notifications");
                     chromeOptions.AddAdditionalCapability("useAutomationExtension", false);
-                    chromeOptions.AddArgument("--lang=" + langList[random.Next(0, langList.Length)]);
                     chromeOptions.AddArgument("--disable-blink-features=AutomationControlled");
-                    chromeOptions.AddUserProfilePreference("credentials_enable_service", false);
-                    chromeOptions.AddUserProfilePreference("profile.password_manager_enabled", false);
+                    chromeOptions.AddArgument("ignore-certificate-errors");
+                    chromeOptions.AddUserProfilePreference("credentials_enable_service", !disableSavePassword);
+                    chromeOptions.AddUserProfilePreference("profile.password_manager_enabled", !disableSavePassword);
+                    FakeProxy();
                 }
                 if (chromeDriver == null)
                 {
-                    if (!String.IsNullOrEmpty(pathChromeDriver))
-                        chromeDriver = new ChromeDriver(pathChromeDriver, chromeOptions);
-                    else
-                        chromeDriver = new ChromeDriver(chromeDriverService, chromeOptions);
+                    chromeDriver = new ChromeDriver(chromeDriverService, chromeOptions);
                 }
                 return chromeDriver;
             }
@@ -225,225 +165,183 @@ namespace AmazonSaveAcc.actionmain
                 throw e;
             }
         }
-        public ChromeDriver BuildChromePortable(String pathEXE = "", String pathProfile = "", String pathChromeDriver = "", String proxy = "", bool isHide = false, bool isImage = false)
+        public void FakeProxy()
         {
-            chromeDriver = null;
-            chromeOptions = null;
-            chromeDriverService = null;
-            try
+            if (!String.IsNullOrEmpty(proxy))
             {
-                try
+                if (typeProxy.Equals(ProxyType.PROXY_SSH))
                 {
-                    if (chromeDriverService == null)
+                    if (profile.Split('|').Length >= 3)
                     {
-
-                        chromeDriverService = ChromeDriverService.CreateDefaultService();
-                        chromeDriverService.HideCommandPromptWindow = true;
-                        chromeDriverService.SuppressInitialDiagnosticInformation = true;
-
+                        String[] proxys = profile.Split('|');
+                        sshClient = ActionCustom.SSHCoverSock5(proxys[0], proxys[1], proxys[2]);
+                        string proxy5 = "127.0.0.1:" + sshClient.ForwardedPorts;
+                        chromeOptions.AddArguments(new string[]
+                        {
+                                    "--proxy-server=" + proxy5
+                        });
                     }
-                    if (chromeOptions == null)
+                    else
                     {
-                        int port = random.Next(3000, 16000);
-                        PortNumber = port;
-                        chromeOptions = new ChromeOptions();
-                        if (!isImage)
-                        {
-                            chromeOptions.AddExtension(AppDomain.CurrentDomain.BaseDirectory + "\\blockImage.crx");
-                        }
-                        if (!String.IsNullOrEmpty(proxy))
-                        {
-                            chromeOptions.AcceptInsecureCertificates = true;
-                            chromeOptions.AddArgument("ignore-certificate-errors");
-                            if (proxy.Split(':').Length > 2)
-                            {
-                                String fileName = PathToApplication + "\\" + proxy.Split(':')[0] + proxy.Split(':')[1] + ".zip";
-                                if (File.Exists(fileName))
-                                {
-                                    chromeOptions.AddExtension(fileName);
-                                }
-                                else
-                                {
-                                    String background = File.ReadAllText(PathToApplication + "\\background.js");
-                                    String manifest = File.ReadAllText(PathToApplication + "\\manifest.json");
-                                    background = background.Replace("%HOST%", proxy.Split(':')[0]);
-                                    background = background.Replace("%PORT%", proxy.Split(':')[1]);
-                                    background = background.Replace("%USERNAME%", proxy.Split(':')[2]);
-                                    background = background.Replace("%PASSWORD%", proxy.Split(':')[3]);
-                                    Console.WriteLine(background);
-                                    try
-                                    {
-                                        ActionCustom.ZipFile(new string[] { background, manifest }, fileName);
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        throw ex;
-                                    }
-                                    chromeOptions.AddExtension(fileName);
-                                }
-                            }
-                            else
-                            {
-                                chromeOptions.AddArguments(new string[]
-                                {
-                                "--proxy-server=" + proxy
-                                });
-                            }
-                        }
-                        if (!String.IsNullOrEmpty(pathEXE))
-                            chromeOptions.BinaryLocation = pathEXE;
-                        if (!String.IsNullOrEmpty(pathProfile))
-                        {
-                            int index = pathProfile.LastIndexOf(@"\");
-                            string profile = pathProfile.Remove(0, index + 1);
-                            chromeOptions.AddArgument($"user-data-dir={pathProfile.Remove(index)}");
-                            Console.WriteLine("Log on: " + pathProfile);
-                            chromeOptions.AddArgument($"--profile-directory={profile}");
-                        }
-                        if (isHide)
-                        {
-                            chromeOptions.AddArguments(new string[]
-                            {
-                                "headless"
-                            });
-                        }
-                        //chromeOptions.AddArgument("user-agent=" + new Faker().Internet.UserAgent());
-                        chromeOptions.AddArgument("window-size=1280,800");
-                        chromeOptions.AddArgument("--lang=" + langList[random.Next(0, langList.Length)]);
-                        chromeOptions.AddArgument("--disable-notifications");
-                        chromeOptions.AddArgument($"--remote-debugging-port={port}");
-                        chromeOptions.AddExcludedArgument("enable-automation");
-                        chromeOptions.AddAdditionalCapability("useAutomationExtension", false);
-                        chromeOptions.AddArgument("--disable-blink-features=AutomationControlled");
-                        chromeOptions.AddUserProfilePreference("credentials_enable_service", false);
-                        chromeOptions.AddUserProfilePreference("profile.password_manager_enabled", false);
+                        throw new Exception("Error: SSH Proxy malformed");
                     }
                 }
-                catch (Exception)
+                else
+                if (typeProxy.Equals(ProxyType.PROXY_SOCK_5))
                 {
-                    chromeOptions = new ChromeOptions();
-                    if (!isImage)
+                    if (profile.Split(':').Length >= 4)
                     {
-                        chromeOptions.AddExtension(AppDomain.CurrentDomain.BaseDirectory + "\\blockImage.crx");
-                    }
-                    if (!String.IsNullOrEmpty(proxy))
-                    {
-                        chromeOptions.AcceptInsecureCertificates = true;
-                        chromeOptions.AddArgument("ignore-certificate-errors");
-                        if (proxy.Split(':').Length > 2)
+                        String[] proxys = profile.Split(':');
+                        String fileName = PathToApplication + "\\" + proxys[0] + proxys[1] + ".zip";
+                        if (File.Exists(fileName))
                         {
-                            String fileName = PathToApplication + "\\" + proxy.Split(':')[0] + proxy.Split(':')[1] + ".zip";
-                            if (File.Exists(fileName))
-                            {
-                                chromeOptions.AddExtension(fileName);
-                            }
-                            else
-                            {
-                                String background = File.ReadAllText(PathToApplication + "\\background.js");
-                                String manifest = File.ReadAllText(PathToApplication + "\\manifest.json");
-                                background = background.Replace("%HOST%", proxy.Split(':')[0]);
-                                background = background.Replace("%PORT%", proxy.Split(':')[1]);
-                                background = background.Replace("%USERNAME%", proxy.Split(':')[2]);
-                                background = background.Replace("%PASSWORD%", proxy.Split(':')[3]);
-                                Console.WriteLine(background);
-                                try
-                                {
-                                    ActionCustom.ZipFile(new string[] { background, manifest }, fileName);
-                                }
-                                catch (Exception ex)
-                                {
-                                    throw ex;
-                                }
-                                chromeOptions.AddExtension(fileName);
-                            }
-
+                            chromeOptions.AddExtension(fileName);
                         }
                         else
                         {
-
-                            chromeOptions.AddArguments(new string[]
+                            String background = File.ReadAllText(PathToApplication + "\\background.js");
+                            String manifest = File.ReadAllText(PathToApplication + "\\manifest.json");
+                            background = background.Replace("%HOST%", proxys[0]);
+                            background = background.Replace("%PORT%", proxys[1]);
+                            background = background.Replace("%USERNAME%", proxys[2]);
+                            background = background.Replace("%PASSWORD%", proxys[3]);
+                            Console.WriteLine(background);
+                            try
                             {
-                                "--proxy-server=" + proxy
-                            });
+                                ActionCustom.ZipFile(new string[] { background, manifest }, fileName);
+                            }
+                            catch (Exception ex)
+                            {
+                                throw ex;
+                            }
+                            chromeOptions.AddExtension(fileName);
                         }
                     }
-                    if (isHide)
-                    {
-                        chromeOptions.AddArguments(new string[]
-                        {
-                            "headless"
-                        });
-                    }
-                    //chromeOptions.AddArgument("user-agent=" + new Faker().Internet.UserAgent());
-                    chromeOptions.AddExcludedArgument("enable-automation");
-                    chromeOptions.AddAdditionalCapability("useAutomationExtension", false);
-                    chromeOptions.AddArgument("--lang=" + langList[random.Next(0, langList.Length)]);
-                    chromeOptions.AddArgument("--disable-blink-features=AutomationControlled");
-                    chromeOptions.AddUserProfilePreference("credentials_enable_service", false);
-                    chromeOptions.AddUserProfilePreference("profile.password_manager_enabled", false);
-                }
-                if (chromeDriver == null)
-                {
-                    if (!String.IsNullOrEmpty(pathChromeDriver))
-                        chromeDriver = new ChromeDriver(pathChromeDriver, chromeOptions);
                     else
-                        chromeDriver = new ChromeDriver(chromeDriverService, chromeOptions);
+                    {
+                        throw new Exception("Error: SOCK5 Proxy malformed");
+                    }
+
+
                 }
-                return chromeDriver;
+                else
+                {
+                    chromeOptions.AddArguments(new string[]   //sock4 va http
+                    {
+                            "--proxy-server=" + proxy
+                    });
+                }
+
             }
-            catch (Exception e)
-            {
-                throw e;
-            }
         }
-
-
-        public static ChromeSetting Build(String pathEXE, String pathProfile, String pathChromeDriver, bool isImage = true)
-        {
-            ChromeSetting chromeSetting = new ChromeSetting();
-            chromeSetting.BuildChromePortable(pathEXE, pathProfile, pathChromeDriver, isImage);
-            return chromeSetting;
-        }
-
-        public static ChromeSetting Build(String pathEXE, String pathProfile, String pathChromeDriver, bool isHide = false, bool isImage = true)
-        {
-            ChromeSetting chromeSetting = new ChromeSetting();
-            chromeSetting.BuildChromePortable(pathEXE, pathProfile, pathChromeDriver, isHide, isImage);
-            return chromeSetting;
-        }
-        public static ChromeSetting Build(String pathEXE, String pathProfile, String pathChromeDriver, String proxy = "", bool isImage = true)
-        {
-            ChromeSetting chromeSetting = new ChromeSetting();
-            chromeSetting.BuildChromePortable(pathEXE, pathProfile, pathChromeDriver, proxy, isImage);
-            return chromeSetting;
-        }
-        public static ChromeSetting Build(String pathEXE, String pathProfile, String pathChromeDriver, String proxy = "", bool isHide = false, bool isImage = true)
-        {
-            ChromeSetting chromeSetting = new ChromeSetting();
-            chromeSetting.BuildChromePortable(pathEXE, pathProfile, pathChromeDriver, proxy, isHide, isImage);
-            return chromeSetting;
-        }
-        public void ClickToButtonXpath(String xPath)
+        public void DisconectSSH()
         {
             try
             {
-                chromeDriver.FindElementByXPath(xPath).Click();
+                sshClient.Disconnect();
             }
             catch (Exception ex)
             {
                 throw ex;
             }
         }
-        public void GoToUrl(String url)
+
+        public static ChromeSetting Build()
+        {
+            ChromeSetting chromeSetting = new ChromeSetting();
+            chromeSetting.BuildChrome();
+            return chromeSetting;
+        }
+        public static ChromeSetting Build(String pathEXE, String pathProfile)
+        {
+            ChromeSetting chromeSetting = new ChromeSetting();
+            chromeSetting.Profile = pathProfile;
+            chromeSetting.Exe = pathEXE;
+            chromeSetting.BuildChrome();
+            return chromeSetting;
+        }
+        public static ChromeSetting Build(String pathEXE, String pathProfile, String proxy = "", String type = "")
+        {
+            ChromeSetting chromeSetting = ChromeSetting.Build(pathEXE, pathProfile);
+            chromeSetting.TypeProxy = type;
+            chromeSetting.Proxy = proxy;
+            chromeSetting.BuildChrome();
+            return chromeSetting;
+        }
+        public static ChromeSetting Build(String pathEXE, String pathProfile, bool isHide = false)
+        {
+            ChromeSetting chromeSetting = ChromeSetting.Build(pathEXE, pathProfile);
+            chromeSetting.IsHide = isHide;
+            chromeSetting.BuildChrome();
+            return chromeSetting;
+        }
+        public static ChromeSetting Build(String pathEXE, String pathProfile, bool isImage = true, bool isHide = false)
+        {
+            ChromeSetting chromeSetting = ChromeSetting.Build(pathEXE, pathProfile);
+            chromeSetting.IsHide = isHide;
+            chromeSetting.isDisableImage = !isImage;
+            chromeSetting.BuildChrome();
+            return chromeSetting;
+        }
+        public static ChromeSetting Build(String pathEXE, String pathProfile, String proxy = "", String type = "", bool isImage = true, bool isHide = false)
+        {
+            ChromeSetting chromeSetting = ChromeSetting.Build(pathEXE, pathProfile, proxy, type);
+            chromeSetting.IsHide = isHide;
+            chromeSetting.isDisableImage = !isImage;
+            chromeSetting.BuildChrome();
+            return chromeSetting;
+        }
+        public static ChromeSetting Build(String pathEXE, String pathProfile, String proxy = "", String type = "", bool isImage = true, bool isHide = false, String lang = "en")
+        {
+            ChromeSetting chromeSetting = ChromeSetting.Build(pathEXE, pathProfile, proxy, type, isImage, isHide, lang);
+            chromeSetting.BuildChrome();
+            return chromeSetting;
+        }
+
+        public void CloseChrome()
         {
             try
             {
-                chromeDriver.Navigate().GoToUrl(url);
+                DisconectSSH();
+                chromeDriver.Quit();
             }
             catch (Exception ex)
             {
                 throw ex;
             }
         }
+
+        public void Click(String element, TypeElement type, string message = "", int location =-1)
+        {
+            try
+            {
+                IWebElement webElement = null ;
+                ReadOnlyCollection<IWebElement> webElements = null;
+                switch (type)
+                {
+                    case TypeElement.XPATH:
+                        webElement = chromeDriver.FindElementByXPath(element);
+                        webElements = chromeDriver.FindElementsByXPath(element);
+                        break;
+                    case TypeElement.ID:
+                        webElement = chromeDriver.FindElementsByClassName(element)[location];
+                        break;
+                    case TypeElement.CLASS:
+                        break;
+                    case TypeElement.NAME:
+                        break;
+                    case TypeElement.JS:
+                        break;
+                }
+                webElement.Click();
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+
+        }
+
     }
 }

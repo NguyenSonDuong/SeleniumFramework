@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Renci.SshNet;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -16,6 +17,7 @@ using System.Windows.Forms;
 namespace AmazonSaveAcc.actionmain
 {
     public delegate void RunInvoker();
+    public delegate void ActionRunHandle();
     public class ActionCustom
     {
         public static String PATH_SAVE_LOG = AppDomain.CurrentDomain.BaseDirectory + "\\log.ini";
@@ -229,6 +231,35 @@ namespace AmazonSaveAcc.actionmain
             thread.IsBackground = isBackground;
             thread.Start();
             return thread;
+        }
+
+
+        public static SshClient SSHCoverSock5(string host, string username, string password)
+        {
+            SshClient _client = new SshClient(host, username, password);
+            _client.Connect();
+            Random random = new Random();
+            uint port = (uint)random.Next(5000, 50000);
+            
+            ForwardedPortDynamic portD = new ForwardedPortDynamic("127.0.0.1", port);
+            _client.AddForwardedPort(portD);
+            if (_client.IsConnected)
+            {
+                if (portD.IsStarted)
+                {
+                    portD.Stop();
+                }
+                try
+                {
+                    portD.Start();
+                    return _client;
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+            return _client;
         }
     }
 }

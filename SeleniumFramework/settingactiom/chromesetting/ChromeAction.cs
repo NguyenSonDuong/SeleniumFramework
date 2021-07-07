@@ -14,13 +14,17 @@ using System.Threading.Tasks;
 
 namespace AmazonSaveAcc.actionmain
 {
-    public delegate void ActionRunHandle();
+    
     public class ChromeAction
     {
         private ChromeSetting chromeSetting;
+
+
+
         private event ErrorHandle errorEvent;
         private event ProcessHandle processEvent;
         private event SuccessHandle successEvent;
+
         private int timeWait = 10;
 
         private bool isRun = true;
@@ -41,15 +45,15 @@ namespace AmazonSaveAcc.actionmain
             remove { this.successEvent -= value; }
         }
         public ChromeSetting ChromeSetting { get => chromeSetting; set => chromeSetting = value; }
+
         public bool IsRun { get => isRun; set => isRun = value; }
         public int TimeWait { get => timeWait; set => timeWait = value; }
-        
-        public void Init(String exe, String profile, String pathChromeDriver, bool isHide = false, bool isImage = true)
+
+        public void Init()
         {
             try
             {
-                chromeSetting = ChromeSetting.Build(exe, profile, pathChromeDriver, isHide, isImage);
-                chromeSetting.Js = chromeSetting.ChromeDriver;
+                chromeSetting = ChromeSetting.Build();
             }
             catch (Exception ex)
             {
@@ -60,13 +64,11 @@ namespace AmazonSaveAcc.actionmain
             }
 
         }
-        public void Init(String exe, String profile, String pathChromeDriver, String proxy, bool isHide = false, bool isImage = true)
+        public void Init(ChromeSetting chromeSetting)
         {
             try
             {
-                chromeSetting = ChromeSetting.Build(exe, profile, pathChromeDriver, proxy, isHide, isImage);
-                chromeSetting.Js = chromeSetting.ChromeDriver;
-
+                this.chromeSetting = chromeSetting;
             }
             catch (Exception ex)
             {
@@ -91,11 +93,11 @@ namespace AmazonSaveAcc.actionmain
                     throw ex;
             }
         }
+
         public void ClickClass(String className)
         {
             try
             {
-                IWebElement webElement = chromeSetting.WaitElement(className, TimeWait, TypeElement.CLASSNAME);
                 webElement.Click();
             }
             catch (Exception ex)

@@ -17,6 +17,7 @@ using OpenQA.Selenium.Support.UI;
 using System.IO;
 using SeleniumFramework.settingactiom.chromesetting;
 using Renci.SshNet;
+using OpenQA.Selenium.Remote;
 
 namespace AmazonSaveAcc.actionmain
 {
@@ -24,12 +25,14 @@ namespace AmazonSaveAcc.actionmain
     {
         #region property
         public static String PathToApplication = AppDomain.CurrentDomain.BaseDirectory;
+        private bool isClean = true;
         private String windowsSize;
         private String lang;
         private bool disableSavePassword;
         private bool isHide;
         private bool isDisableImage;
         private String proxy;
+        private String useragent;
         private String typeProxy = "SSH";
         private String exe;
         private String profile;
@@ -52,6 +55,8 @@ namespace AmazonSaveAcc.actionmain
         public string Exe { get => exe; set => exe = value; }
         public string Profile { get => profile; set => profile = value; }
         public string TypeProxy { get => typeProxy; set => typeProxy = value; }
+        public bool IsClean { get => isClean; set => isClean = value; }
+        public string Useragent { get => useragent; set => useragent = value; }
         #endregion
 
         public ChromeSetting()
@@ -100,6 +105,66 @@ namespace AmazonSaveAcc.actionmain
         }
 
         // Khơi tạo chrome driver với các cấu hình tiêu chuẩn
+        public ChromeDriver BuildChromeMobile()
+        {
+            chromeDriver = null;
+            chromeOptions = null;
+            chromeDriverService = null;
+            try
+            {
+                if (chromeDriverService == null)
+                {
+                    chromeDriverService = ChromeDriverService.CreateDefaultService();
+                    chromeDriverService.HideCommandPromptWindow = true;
+                    chromeDriverService.SuppressInitialDiagnosticInformation = true;
+                }
+                if (chromeOptions == null)
+                {
+                    int port = random.Next(3000, 16000);
+                    chromeOptions = new ChromeOptions();
+                    
+                    chromeOptions.AcceptInsecureCertificates = true;
+                    if (isDisableImage)
+                    {
+                        chromeOptions.AddExtension(AppDomain.CurrentDomain.BaseDirectory + "\\blockImage.crx");
+                    }
+                    if (!String.IsNullOrEmpty(exe))
+                        chromeOptions.BinaryLocation = exe;
+                    if (!String.IsNullOrEmpty(profile))
+                    {
+                        int index = profile.LastIndexOf(@"\");
+                        string profile2 = profile.Remove(0, index + 1);
+                        chromeOptions.AddArgument($"user-data-dir={profile.Remove(index)}");
+                        chromeOptions.AddArgument($"--profile-directory={profile2}");
+                    }
+                    if (isHide)
+                    {
+                        chromeOptions.AddArguments(new string[]
+                        {
+                                "headless"
+                        });
+                    }
+                    FakeProxy();
+                    ChromeMobileEmulationDeviceSettings CMEDS = new ChromeMobileEmulationDeviceSettings();
+                    CMEDS.Width = 700;
+                    CMEDS.Height = 1000;
+                    CMEDS.PixelRatio = 3.0;
+                    CMEDS.EnableTouchEvents = true;
+                    CMEDS.UserAgent = "Mozilla/5.0 (Linux; Android 6.0.1; RedMi Note 5 Build/RB3N5C; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/68.0.3440.91 Mobile Safari/537.36";
+                    chromeOptions.EnableMobileEmulation(CMEDS);
+                    
+                }
+                if (chromeDriver == null)
+                {
+                    chromeDriver = new ChromeDriver(chromeDriverService, chromeOptions);
+                }
+                return chromeDriver;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
         public ChromeDriver BuildChrome()
         {
             chromeDriver = null;
@@ -141,10 +206,11 @@ namespace AmazonSaveAcc.actionmain
                     chromeOptions = new ChromeOptions();
                     chromeOptions.AcceptInsecureCertificates = true;
                     if (!String.IsNullOrEmpty(windowsSize))
-                        chromeOptions.AddArgument("window-size=" + windowsSize);
+                        chromeOptions.AddArgument("--window-size=" + windowsSize);
                     if (!String.IsNullOrEmpty(lang))
                         chromeOptions.AddArgument("--lang=" + lang);
                     chromeOptions.AddArgument($"--remote-debugging-port={port}");
+                    chromeOptions.AddArgument($"--user-agent={Useragent}");
                     chromeOptions.AddExcludedArgument("enable-automation");
                     chromeOptions.AddArgument("--disable-notifications");
                     chromeOptions.AddAdditionalCapability("useAutomationExtension", false);
@@ -238,7 +304,8 @@ namespace AmazonSaveAcc.actionmain
         {
             try
             {
-                sshClient.Disconnect();
+                if (sshClient != null)
+                    sshClient.Disconnect();
             }
             catch (Exception ex)
             {
@@ -311,11 +378,11 @@ namespace AmazonSaveAcc.actionmain
             }
         }
 
-        public void Click(String element, TypeElement type, string message = "", int location =-1)
+        public void Click(String element, TypeElement type, int location = -1)
         {
             try
             {
-                IWebElement webElement = null ;
+                IWebElement webElement = null;
                 ReadOnlyCollection<IWebElement> webElements = null;
                 switch (type)
                 {
@@ -324,24 +391,339 @@ namespace AmazonSaveAcc.actionmain
                         webElements = chromeDriver.FindElementsByXPath(element);
                         break;
                     case TypeElement.ID:
-                        webElement = chromeDriver.FindElementsByClassName(element)[location];
+                        webElement = chromeDriver.FindElementById(element);
                         break;
                     case TypeElement.CLASS:
+                        webElement = chromeDriver.FindElementByClassName(element);
+                        webElements = chromeDriver.FindElementsByClassName(element);
                         break;
                     case TypeElement.NAME:
+                        webElement = chromeDriver.FindElementByName(element);
+                        webElements = chromeDriver.FindElementsByName(element);
+                        break;
+                    case TypeElement.JS:
+                        webElement = (IWebElement)chromeDriver.ExecuteScript(element);
+                        break;
+                    case TypeElement.JS2:
+                        chromeDriver.ExecuteScript(element);
+                        return;
+                }
+                if (location >= 0)
+                {
+                    if (webElements != null || webElements.Count <= 0)
+                        webElements[location].Click();
+                    else
+                        throw new Exception("Element no found");
+                }
+                else
+                {
+                    if (webElement != null)
+                        webElement.Click();
+                    else
+                        throw new Exception("Element no found");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public IWebElement GetElement(String element, TypeElement type)
+        {
+            try
+            {
+                if (chromeDriver.Title == null)
+                    throw new Exception("Chrome be closer");
+                IWebElement webElement = null;
+                switch (type)
+                {
+                    case TypeElement.XPATH:
+                        webElement = chromeDriver.FindElementByXPath(element);
+                        break;
+                    case TypeElement.ID:
+                        webElement = chromeDriver.FindElementById(element);
+                        break;
+                    case TypeElement.CLASS:
+                        webElement = chromeDriver.FindElementByClassName(element);
+                        break;
+                    case TypeElement.NAME:
+                        webElement = chromeDriver.FindElementByName(element);
+                        break;
+                    case TypeElement.JS:
+                        webElement = (IWebElement)chromeDriver.ExecuteScript(element);
+                        break;
+                }
+                return webElement;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+        }
+        public ReadOnlyCollection<IWebElement> GetElements(String element, TypeElement type)
+        {
+            try
+            {
+                if (chromeDriver.Title == null)
+                    throw new Exception("Chrome be closer");
+                ReadOnlyCollection<IWebElement> webElements = null;
+                switch (type)
+                {
+                    case TypeElement.XPATH:
+                        webElements = chromeDriver.FindElementsByXPath(element);
+                        break;
+                    case TypeElement.CLASS:
+                        webElements = chromeDriver.FindElementsByClassName(element);
+                        break;
+                    case TypeElement.NAME:
+                        webElements = chromeDriver.FindElementsByName(element);
                         break;
                     case TypeElement.JS:
                         break;
                 }
-                webElement.Click();
+                return webElements;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+        }
+        public void Click(String element, TypeElement type, String message, bool isExactly = false, int location = -1)
+        {
+            try
+            {
+                IWebElement webElement = GetElement(element, type);
+                ReadOnlyCollection<IWebElement> webElements = GetElements(element, type);
+                int i = 0;
+                if (webElements == null || webElements.Count <= 0)
+                {
+                    throw new Exception("Element not found");
+                }
+                foreach (IWebElement element1 in webElements)
+                {
+                    if ((isExactly ? element1.Text.Trim().Equals(message) : element1.Text.Trim().Contains(message)))
+                    {
+                        i++;
+                        if (i >= location)
+                        {
+                            element1.Click();
+                            return;
+                        }
+                        if (location < 0)
+                        {
+                            element1.Click();
+                            return;
+                        }
+                    }
+
+                }
             }
             catch (Exception ex)
             {
 
             }
-
-
         }
+        public void SendKey(String element, TypeElement type, String message = "", int location = -1)
+        {
+            try
+            {
+                IWebElement webElement = GetElement(element, type);
+                ReadOnlyCollection<IWebElement> webElements = GetElements(element, type);
+                if (location >= 0)
+                {
+                    if (webElements != null || webElements.Count <= 0)
+                    {
+                        if (isClean)
+                            webElements[location].Clear();
+                        webElements[location].SendKeys(message);
+                    }
+                    else
+                        throw new Exception("Element no found");
+                }
+                else
+                {
+                    if (webElement != null)
+                    {
+                        if (isClean)
+                            webElement.Clear();
+                        webElement.SendKeys(message);
+                    }
+                    else
+                        throw new Exception("Element no found");
+                }
 
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public void WriteKey(String element, TypeElement type, String message = "", int timeDelay = 100, int location = -1)
+        {
+            try
+            {
+                IWebElement webElement = GetElement(element, type);
+                ReadOnlyCollection<IWebElement> webElements = GetElements(element, type);
+                if (location >= 0)
+                {
+                    if (webElements != null || webElements.Count <= 0)
+                    {
+                        char[] arrxPath = message.ToCharArray();
+                        foreach (var path in arrxPath)
+                        {
+                            webElements[location].SendKeys(path + "");
+                            Thread.Sleep(timeDelay);
+                        }
+                    }
+                    else
+                        throw new Exception("Element no found");
+                }
+                else
+                {
+                    if (webElement != null)
+                    {
+                        char[] arrxPath = message.ToCharArray();
+                        foreach (var path in arrxPath)
+                        {
+                            webElement.SendKeys(path + "");
+                            Thread.Sleep(timeDelay);
+                        }
+                    }
+                    else
+                        throw new Exception("Element no found");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public void ClickAll(String element, TypeElement type, int delay = 1000, Action action = null)
+        {
+            try
+            {
+                IWebElement webElement = GetElement(element, type);
+                ReadOnlyCollection<IWebElement> webElements = GetElements(element, type);
+                if (webElement != null)
+                {
+                    webElement.Click();
+                }
+                else
+                {
+                    foreach (IWebElement element1 in webElements)
+                    {
+                        element1.Click();
+                        Thread.Sleep(delay);
+                        if (action != null)
+                        {
+                            action(element1, this);
+                        }
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        
+        public String GetText(String element, TypeElement type, int location = -1)
+        {
+            try
+            {
+                IWebElement element1 = GetElement(element, type);
+                ReadOnlyCollection<IWebElement> elements = GetElements(element, type);
+                if (location >= 0)
+                {
+                    return elements[location].Text.Trim();
+                }
+                else
+                {
+                    return element1.Text.Trim();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public bool CheckElement(String element, TypeElement type)
+        {
+            try
+            {
+                IWebElement element2 = GetElement(element, type);
+                return element2 != null;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+        public String GetAttr(String element, TypeElement type, string attr, int location = -1)
+        {
+            try
+            {
+                IWebElement element1 = GetElement(element, type);
+                ReadOnlyCollection<IWebElement> elements = GetElements(element, type);
+                if (location >= 0)
+                {
+                    return elements[location].GetAttribute(attr).Trim();
+                }
+                else
+                {
+                    return element1.GetAttribute(attr).Trim();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public void GoToUrl(String url)
+        {
+            try
+            {
+                chromeDriver.Navigate().GoToUrl(url);
+                WaitLoadJS();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            
+        }
+        public void WaitLoadJS()
+        {
+            try
+            {
+                WebDriverWait wait = new WebDriverWait(chromeDriver, TimeSpan.FromSeconds(30));
+                wait.Until((x) =>
+                {
+                    return ((IJavaScriptExecutor)chromeDriver).ExecuteScript("return document.readyState").Equals("complete");
+
+                });
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public int GetQuantity(String element, TypeElement type)
+        {
+            try
+            {
+                ReadOnlyCollection<IWebElement> elements = GetElements(element, type);
+                return elements.Count;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }

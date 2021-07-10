@@ -1,20 +1,24 @@
 ﻿using AmazonSaveAcc.actionmain;
+using SeleniumFramework.model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace SeleniumFramework.settingactiom.chromesetting
 {
     public class Chrome : IActionSelenium
     {
         private ChromeSetting chromeSetting;
-
+        private bool isCleanInput = true;
         private event ErrorHandle errorEvent;
         private event ProcessHandle processEvent;
         private event SuccessHandle successEvent;
 
+        private Queue<StartActionChrome> listAction;
 
         public event ErrorHandle ErrorEvent
         {
@@ -34,17 +38,94 @@ namespace SeleniumFramework.settingactiom.chromesetting
 
 
         public ChromeSetting ChromeSetting { get => chromeSetting; set => chromeSetting = value; }
+        public bool IsCleanInput { get => isCleanInput; set => isCleanInput = value; }
+        public Queue<StartActionChrome> ListAction { get => listAction; set => listAction = value; }
 
         public Chrome()
         {
+            chromeSetting = new ChromeSetting();
+            listAction = new Queue<StartActionChrome>();
+        }
+        public void SetCloseWhenFormClosing(Form form)
+        {
+            form.FormClosing += (obj, send) =>
+            {
+                chromeSetting.CloseChrome();
+            };
+        }
+        public Thread StartMobile(int delay = 1000)
+        {
+            return ActionCustom.MakeThread(() =>
+            {
+                try
+                {
+                    chromeSetting.BuildChromeMobile();
+                    foreach (StartActionChrome startAction in listAction)
+                    {
+                        startAction();
+                        Thread.Sleep(delay);
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    if (errorEvent != null)
+                        errorEvent(ex, this, 100);
+                    else
+                        throw ex;
+                }
+            });
 
         }
+        public Thread StartThread(StartActionChrome startActionChrome, int delay = 1000)
+        {
+            return ActionCustom.MakeThread(() =>
+            {
+                try
+                {
+                    chromeSetting.BuildChrome();
+                    if (startActionChrome != null)
+                    {
+                        startActionChrome();
+                    }
+                    foreach (StartActionChrome startAction in listAction)
+                    {
+                        startAction();
+                        Thread.Sleep(delay);
+                    }
 
-        public void Init()
+                }
+                catch (Exception ex)
+                {
+                    if (errorEvent != null)
+                        errorEvent(ex, this, 100);
+                    else
+                        throw ex;
+                }
+            });
+        }
+        public Thread StartThread()
+        {
+            return ActionCustom.MakeThread(() =>
+            {
+                try
+                {
+                    chromeSetting.BuildChrome();
+                }
+                catch (Exception ex)
+                {
+                    if (errorEvent != null)
+                        errorEvent(ex, this, 100);
+                    else
+                        throw ex;
+                }
+            });
+        }
+        public void Start()
         {
             try
             {
-                chromeSetting = ChromeSetting.Build();
+                chromeSetting.BuildChrome();
             }
             catch (Exception ex)
             {
@@ -54,15 +135,47 @@ namespace SeleniumFramework.settingactiom.chromesetting
                     throw ex;
             }
         }
+        public void Init()
+        {
+            ActionCustom.MakeThread(() =>
+            {
+                try
+                {
+                    chromeSetting = ChromeSetting.Build();
+                }
+                catch (Exception ex)
+                {
+                    if (errorEvent != null)
+                        errorEvent(ex, this, 100);
+                    else
+                        throw ex;
+                }
+            });
 
-        
+        }
 
+
+        public void GoToUrl(String url)
+        {
+            try
+            {
+                chromeSetting.GoToUrl(url);
+            }
+            catch (Exception ex)
+            {
+                if (errorEvent != null)
+                    errorEvent(ex, this, 100);
+                else
+                    throw ex;
+            }
+        }
         public void ClickClass(string classname, int location)
         {
             try
             {
-
-            }catch(Exception ex)
+                chromeSetting.Click(classname, TypeElement.CLASS, location);
+            }
+            catch (Exception ex)
             {
                 if (errorEvent != null)
                     errorEvent(ex, this, 100);
@@ -75,7 +188,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                chromeSetting.Click(classname, TypeElement.CLASS);
             }
             catch (Exception ex)
             {
@@ -90,7 +203,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                chromeSetting.Click(classname, TypeElement.CLASS, message);
             }
             catch (Exception ex)
             {
@@ -105,7 +218,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                chromeSetting.Click(id, TypeElement.ID);
             }
             catch (Exception ex)
             {
@@ -120,7 +233,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                chromeSetting.Click(xpath, TypeElement.XPATH, location);
             }
             catch (Exception ex)
             {
@@ -135,7 +248,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                chromeSetting.Click(xpath, TypeElement.XPATH);
             }
             catch (Exception ex)
             {
@@ -150,7 +263,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                chromeSetting.Click(xpath, TypeElement.XPATH, message);
             }
             catch (Exception ex)
             {
@@ -165,7 +278,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                chromeSetting.Click(name, TypeElement.NAME, location);
             }
             catch (Exception ex)
             {
@@ -180,7 +293,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                chromeSetting.Click(name, TypeElement.NAME);
             }
             catch (Exception ex)
             {
@@ -191,11 +304,11 @@ namespace SeleniumFramework.settingactiom.chromesetting
             }
         }
 
-        public void ClickName(string xpath, string message)
+        public void ClickName(string name, string message)
         {
             try
             {
-
+                chromeSetting.Click(name, TypeElement.NAME, message);
             }
             catch (Exception ex)
             {
@@ -210,7 +323,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                chromeSetting.Click(js, TypeElement.JS);
             }
             catch (Exception ex)
             {
@@ -225,7 +338,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                chromeSetting.Click(js, TypeElement.JS2);
             }
             catch (Exception ex)
             {
@@ -240,7 +353,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                chromeSetting.SendKey(classname, TypeElement.CLASS, message, location);
             }
             catch (Exception ex)
             {
@@ -255,7 +368,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                chromeSetting.SendKey(classname, TypeElement.CLASS, message);
             }
             catch (Exception ex)
             {
@@ -270,7 +383,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                chromeSetting.SendKey(id, TypeElement.ID, message);
             }
             catch (Exception ex)
             {
@@ -285,7 +398,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                chromeSetting.SendKey(xpath, TypeElement.XPATH, message, location);
             }
             catch (Exception ex)
             {
@@ -300,7 +413,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                chromeSetting.SendKey(xpath, TypeElement.XPATH, message);
             }
             catch (Exception ex)
             {
@@ -315,7 +428,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                chromeSetting.SendKey(name, TypeElement.NAME, message, location);
             }
             catch (Exception ex)
             {
@@ -330,7 +443,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                chromeSetting.SendKey(name, TypeElement.NAME, message);
             }
             catch (Exception ex)
             {
@@ -345,7 +458,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                chromeSetting.SendKey(js, TypeElement.JS, message);
             }
             catch (Exception ex)
             {
@@ -360,7 +473,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                chromeSetting.SendKey(js, TypeElement.JS2);
             }
             catch (Exception ex)
             {
@@ -375,7 +488,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                chromeSetting.WriteKey(classname, TypeElement.CLASS, message, timeDelay, location);
             }
             catch (Exception ex)
             {
@@ -390,7 +503,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                chromeSetting.WriteKey(classname, TypeElement.CLASS, message, timeDelay);
             }
             catch (Exception ex)
             {
@@ -405,7 +518,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                chromeSetting.WriteKey(id, TypeElement.ID, message, timeDelay);
             }
             catch (Exception ex)
             {
@@ -420,7 +533,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                chromeSetting.WriteKey(xpath, TypeElement.XPATH, message, timeDelay, location);
             }
             catch (Exception ex)
             {
@@ -435,7 +548,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                chromeSetting.WriteKey(xpath, TypeElement.CLASS, message, timeDelay);
             }
             catch (Exception ex)
             {
@@ -450,7 +563,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                chromeSetting.WriteKey(name, TypeElement.NAME, message, timeDelay, location);
             }
             catch (Exception ex)
             {
@@ -465,7 +578,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                chromeSetting.WriteKey(name, TypeElement.NAME, message, timeDelay);
             }
             catch (Exception ex)
             {
@@ -480,7 +593,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                chromeSetting.WriteKey(js, TypeElement.JS, message, timeDelay);
             }
             catch (Exception ex)
             {
@@ -495,7 +608,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                throw new Exception("Not support");
             }
             catch (Exception ex)
             {
@@ -510,7 +623,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                return chromeSetting.GetText(classname, TypeElement.CLASS, location);
             }
             catch (Exception ex)
             {
@@ -526,7 +639,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                return chromeSetting.GetText(classname, TypeElement.CLASS);
             }
             catch (Exception ex)
             {
@@ -538,27 +651,12 @@ namespace SeleniumFramework.settingactiom.chromesetting
             return "";
         }
 
-        public string GetTextClass(string classname, string message)
-        {
-            try
-            {
-
-            }
-            catch (Exception ex)
-            {
-                if (errorEvent != null)
-                    errorEvent(ex, this, 100);
-                else
-                    throw ex;
-            }
-            return "";
-        }
 
         public string GetTextID(string id)
         {
             try
             {
-
+                return chromeSetting.GetText(id, TypeElement.ID);
             }
             catch (Exception ex)
             {
@@ -574,7 +672,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                return chromeSetting.GetText(xpath, TypeElement.XPATH, location);
             }
             catch (Exception ex)
             {
@@ -590,7 +688,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                return chromeSetting.GetText(xpath, TypeElement.XPATH);
             }
             catch (Exception ex)
             {
@@ -603,28 +701,12 @@ namespace SeleniumFramework.settingactiom.chromesetting
 
         }
 
-        public string GetTextXpath(string xpath, string message)
-        {
-            try
-            {
-
-            }
-            catch (Exception ex)
-            {
-                if (errorEvent != null)
-                    errorEvent(ex, this, 100);
-                else
-                    throw ex;
-            }
-            return "";
-
-        }
 
         public string GetTextName(string name, int location)
         {
             try
             {
-
+                return chromeSetting.GetText(name, TypeElement.NAME, location);
             }
             catch (Exception ex)
             {
@@ -641,7 +723,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                return chromeSetting.GetText(name, TypeElement.NAME);
             }
             catch (Exception ex)
             {
@@ -654,22 +736,6 @@ namespace SeleniumFramework.settingactiom.chromesetting
 
         }
 
-        public string GetTextName(string xpath, string message)
-        {
-            try
-            {
-
-            }
-            catch (Exception ex)
-            {
-                if (errorEvent != null)
-                    errorEvent(ex, this, 100);
-                else
-                    throw ex;
-            }
-            return "";
-
-        }
 
         public string GetTextJS(string js)
         {
@@ -692,7 +758,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                return chromeSetting.GetText(js, TypeElement.JS);
             }
             catch (Exception ex)
             {
@@ -710,7 +776,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                return chromeSetting.GetQuantity(classname, TypeElement.CLASS);
             }
             catch (Exception ex)
             {
@@ -726,7 +792,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                return chromeSetting.GetQuantity(xpath, TypeElement.XPATH);
             }
             catch (Exception ex)
             {
@@ -742,7 +808,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                return chromeSetting.GetQuantity(name, TypeElement.NAME);
             }
             catch (Exception ex)
             {
@@ -758,7 +824,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                chromeSetting.CheckElement(classname, TypeElement.CLASS);
             }
             catch (Exception ex)
             {
@@ -774,7 +840,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                chromeSetting.CheckElement(xpath, TypeElement.XPATH);
             }
             catch (Exception ex)
             {
@@ -790,7 +856,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                chromeSetting.CheckElement(id, TypeElement.ID);
             }
             catch (Exception ex)
             {
@@ -806,7 +872,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                chromeSetting.CheckElement(name, TypeElement.NAME);
             }
             catch (Exception ex)
             {
@@ -822,7 +888,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                chromeSetting.GetAttr(xpath, TypeElement.XPATH, attr, location);
             }
             catch (Exception ex)
             {
@@ -838,7 +904,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                chromeSetting.GetAttr(xpath, TypeElement.XPATH, attr);
             }
             catch (Exception ex)
             {
@@ -850,27 +916,12 @@ namespace SeleniumFramework.settingactiom.chromesetting
             return "";
         }
 
-        public string GetAttrXpath(string attr, string xpath, string message)
-        {
-            try
-            {
-
-            }
-            catch (Exception ex)
-            {
-                if (errorEvent != null)
-                    errorEvent(ex, this, 100);
-                else
-                    throw ex;
-            }
-            return "";
-        }
 
         public string GetAttrName(string attr, string name, int location)
         {
             try
             {
-
+                chromeSetting.GetAttr(name, TypeElement.NAME, attr, location);
             }
             catch (Exception ex)
             {
@@ -886,7 +937,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                chromeSetting.GetAttr(name, TypeElement.NAME, attr);
             }
             catch (Exception ex)
             {
@@ -898,58 +949,12 @@ namespace SeleniumFramework.settingactiom.chromesetting
             return "";
         }
 
-        public string GetAttrName(string attr, string xpath, string message)
-        {
-            try
-            {
-
-            }
-            catch (Exception ex)
-            {
-                if (errorEvent != null)
-                    errorEvent(ex, this, 100);
-                else
-                    throw ex;
-            }
-            return "";
-        }
-
-        public string GetAttrJS(string attr, string js)
-        {
-            try
-            {
-
-            }
-            catch (Exception ex)
-            {
-                if (errorEvent != null)
-                    errorEvent(ex, this, 100);
-                else
-                    throw ex;
-            }
-            return "";
-        }
-
-        public string GetAttrByJS(string attr, string js)
-        {
-            try
-            {
-
-            }
-            catch (Exception ex)
-            {
-                if (errorEvent != null)
-                    errorEvent(ex, this, 100);
-                else
-                    throw ex;
-            }
-            return "";
-        }
 
         public string GetAttrClass(string attr, string classname, int location)
         {
             try
             {
+                chromeSetting.GetAttr(classname, TypeElement.CLASS, attr, location);
 
             }
             catch (Exception ex)
@@ -966,23 +971,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
-            }
-            catch (Exception ex)
-            {
-                if (errorEvent != null)
-                    errorEvent(ex, this, 100);
-                else
-                    throw ex;
-            }
-            return "";
-        }
-
-        public string GetAttrClass(string attr, string classname, string message)
-        {
-            try
-            {
-
+                chromeSetting.GetAttr(classname, TypeElement.CLASS, attr);
             }
             catch (Exception ex)
             {
@@ -998,7 +987,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         {
             try
             {
-
+                chromeSetting.GetAttr(id, TypeElement.ID, attr);
             }
             catch (Exception ex)
             {
@@ -1009,5 +998,6 @@ namespace SeleniumFramework.settingactiom.chromesetting
             }
             return "";
         }
+
     }
 }

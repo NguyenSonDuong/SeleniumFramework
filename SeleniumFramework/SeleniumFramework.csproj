@@ -71,11 +71,9 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="SeleniumFramework.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="settingactiom\ActionCustom.cs" />
     <Compile Include="settingactiom\chromesetting\Chrome.cs" />
-    <Compile Include="settingactiom\chromesetting\ChromeAction.cs" />
     <Compile Include="settingactiom\chromesetting\ChromeSetting.cs" />
     <Compile Include="settingactiom\chromesetting\ProxyType.cs" />
     <Compile Include="settingactiom\ConstAll.cs" />
@@ -83,7 +81,6 @@
     <Compile Include="settingactiom\firefoxsetting\FireFoxAction.cs" />
     <Compile Include="settingactiom\firefoxsetting\FirefoxSetting.cs" />
     <Compile Include="settingactiom\IActionSelenium.cs" />
-    <Compile Include="settingactiom\ISetting.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

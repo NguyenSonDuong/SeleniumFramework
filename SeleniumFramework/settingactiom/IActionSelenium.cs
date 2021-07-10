@@ -74,17 +74,14 @@ namespace SeleniumFramework.settingactiom
         #region gettext
         String GetTextClass(String classname, int location);
         String GetTextClass(String classname);
-        String GetTextClass(String classname, String message);
 
         String GetTextID(String id);
 
         String GetTextXpath(String xpath, int location);
         String GetTextXpath(String xpath);
-        String GetTextXpath(String xpath, String message);
 
         String GetTextName(String name, int location);
         String GetTextName(String name);
-        String GetTextName(String xpath, String message);
 
         String GetTextJS(String js);
 
@@ -94,21 +91,14 @@ namespace SeleniumFramework.settingactiom
         #region get attr
         String GetAttrClass(String attr, String classname, int location);
         String GetAttrClass(String attr, String classname);
-        String GetAttrClass(String attr, String classname, String message);
 
         String GetAttrID(String attr, String id);
 
         String GetAttrXpath(String attr,String xpath, int location);
         String GetAttrXpath(String attr, String xpath);
-        String GetAttrXpath(String attr, String xpath, String message);
 
         String GetAttrName(String attr, String name, int location);
         String GetAttrName(String attr, String name);
-        String GetAttrName(String attr, String xpath, String message);
-
-        String GetAttrJS(String attr, String js);
-
-        String GetAttrByJS(String attr, String js);
         #endregion
 
         #region get length

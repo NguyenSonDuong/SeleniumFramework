@@ -30,3 +30,16 @@ C:\Users\MinhHoangJSC\Documents\CShaphProject\CShaphProject\SeleniumFramework\Se
 C:\Users\MinhHoangJSC\Documents\CShaphProject\CShaphProject\SeleniumFramework\SeleniumFramework\obj\Debug\SeleniumFramework.csproj.CoreCompileInputs.cache
 C:\Users\MinhHoangJSC\Documents\CShaphProject\CShaphProject\SeleniumFramework\SeleniumFramework\obj\Debug\SeleniumFramework.dll
 C:\Users\MinhHoangJSC\Documents\CShaphProject\CShaphProject\SeleniumFramework\SeleniumFramework\obj\Debug\SeleniumFramework.pdb
+C:\Users\MinhHoangJSC\Documents\CShaphProject\CShaphProject\SeleniumFramework\SeleniumFramework\bin\Debug\resourc\background.js
+C:\Users\MinhHoangJSC\Documents\CShaphProject\CShaphProject\SeleniumFramework\SeleniumFramework\bin\Debug\resourc\manifest.json
+C:\Users\MinhHoangJSC\Documents\CShaphProject\CShaphProject\SeleniumFramework\SeleniumFramework\bin\Debug\SeleniumFramework.dll
+C:\Users\MinhHoangJSC\Documents\CShaphProject\CShaphProject\SeleniumFramework\SeleniumFramework\bin\Debug\SeleniumFramework.pdb
+C:\Users\MinhHoangJSC\Documents\CShaphProject\CShaphProject\SeleniumFramework\SeleniumFramework\bin\Debug\Bogus.dll
+C:\Users\MinhHoangJSC\Documents\CShaphProject\CShaphProject\SeleniumFramework\SeleniumFramework\bin\Debug\Renci.SshNet.dll
+C:\Users\MinhHoangJSC\Documents\CShaphProject\CShaphProject\SeleniumFramework\SeleniumFramework\bin\Debug\WebDriver.dll
+C:\Users\MinhHoangJSC\Documents\CShaphProject\CShaphProject\SeleniumFramework\SeleniumFramework\bin\Debug\WebDriver.Support.dll
+C:\Users\MinhHoangJSC\Documents\CShaphProject\CShaphProject\SeleniumFramework\SeleniumFramework\bin\Debug\Bogus.xml
+C:\Users\MinhHoangJSC\Documents\CShaphProject\CShaphProject\SeleniumFramework\SeleniumFramework\bin\Debug\Renci.SshNet.xml
+C:\Users\MinhHoangJSC\Documents\CShaphProject\CShaphProject\SeleniumFramework\SeleniumFramework\bin\Debug\WebDriver.xml
+C:\Users\MinhHoangJSC\Documents\CShaphProject\CShaphProject\SeleniumFramework\SeleniumFramework\bin\Debug\WebDriver.Support.xml
+C:\Users\MinhHoangJSC\Documents\CShaphProject\CShaphProject\SeleniumFramework\SeleniumFramework\obj\Debug\SeleniumFramework.csproj.CopyComplete

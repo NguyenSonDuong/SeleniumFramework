@@ -53,30 +53,6 @@ namespace SeleniumFramework.settingactiom.chromesetting
                 chromeSetting.CloseChrome();
             };
         }
-        public Thread StartMobile(int delay = 1000)
-        {
-            return ActionCustom.MakeThread(() =>
-            {
-                try
-                {
-                    chromeSetting.BuildChromeMobile();
-                    foreach (StartActionChrome startAction in listAction)
-                    {
-                        startAction();
-                        Thread.Sleep(delay);
-                    }
-
-                }
-                catch (Exception ex)
-                {
-                    if (errorEvent != null)
-                        errorEvent(ex, this, 100);
-                    else
-                        throw ex;
-                }
-            });
-
-        }
         public Thread StartThread(StartActionChrome startActionChrome, int delay = 1000)
         {
             return ActionCustom.MakeThread(() =>
@@ -111,6 +87,10 @@ namespace SeleniumFramework.settingactiom.chromesetting
                 try
                 {
                     chromeSetting.BuildChrome();
+                    foreach (StartActionChrome startAction in listAction)
+                    {
+                        startAction();
+                    }
                 }
                 catch (Exception ex)
                 {

@@ -37,6 +37,7 @@ namespace AmazonSaveAcc.actionmain
         private String exe;
         private String profile;
         private SshClient sshClient;
+        private bool isMobile = false;
         private static Random random = new Random();
 
         private ChromeDriver chromeDriver;
@@ -57,6 +58,7 @@ namespace AmazonSaveAcc.actionmain
         public string TypeProxy { get => typeProxy; set => typeProxy = value; }
         public bool IsClean { get => isClean; set => isClean = value; }
         public string Useragent { get => useragent; set => useragent = value; }
+        public bool IsMobile { get => isMobile; set => isMobile = value; }
         #endregion
 
         public ChromeSetting()
@@ -104,67 +106,6 @@ namespace AmazonSaveAcc.actionmain
             this.chromeDriverService = chromeDriverService;
         }
 
-        // Khơi tạo chrome driver với các cấu hình tiêu chuẩn
-        public ChromeDriver BuildChromeMobile()
-        {
-            chromeDriver = null;
-            chromeOptions = null;
-            chromeDriverService = null;
-            try
-            {
-                if (chromeDriverService == null)
-                {
-                    chromeDriverService = ChromeDriverService.CreateDefaultService();
-                    chromeDriverService.HideCommandPromptWindow = true;
-                    chromeDriverService.SuppressInitialDiagnosticInformation = true;
-                }
-                if (chromeOptions == null)
-                {
-                    int port = random.Next(3000, 16000);
-                    chromeOptions = new ChromeOptions();
-                    
-                    chromeOptions.AcceptInsecureCertificates = true;
-                    if (isDisableImage)
-                    {
-                        chromeOptions.AddExtension(AppDomain.CurrentDomain.BaseDirectory + "\\blockImage.crx");
-                    }
-                    if (!String.IsNullOrEmpty(exe))
-                        chromeOptions.BinaryLocation = exe;
-                    if (!String.IsNullOrEmpty(profile))
-                    {
-                        int index = profile.LastIndexOf(@"\");
-                        string profile2 = profile.Remove(0, index + 1);
-                        chromeOptions.AddArgument($"user-data-dir={profile.Remove(index)}");
-                        chromeOptions.AddArgument($"--profile-directory={profile2}");
-                    }
-                    if (isHide)
-                    {
-                        chromeOptions.AddArguments(new string[]
-                        {
-                                "headless"
-                        });
-                    }
-                    FakeProxy();
-                    ChromeMobileEmulationDeviceSettings CMEDS = new ChromeMobileEmulationDeviceSettings();
-                    CMEDS.Width = Int32.Parse(windowsSize.Split(',')[0]);
-                    CMEDS.Height = Int32.Parse(windowsSize.Split(',')[1]);
-                    CMEDS.PixelRatio = 3.0;
-                    CMEDS.EnableTouchEvents = true;
-                    CMEDS.UserAgent = useragent;
-                    chromeOptions.EnableMobileEmulation(CMEDS);
-                    
-                }
-                if (chromeDriver == null)
-                {
-                    chromeDriver = new ChromeDriver(chromeDriverService, chromeOptions);
-                }
-                return chromeDriver;
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
         public ChromeDriver BuildChrome()
         {
             chromeDriver = null;
@@ -181,8 +122,6 @@ namespace AmazonSaveAcc.actionmain
                 if (chromeOptions == null)
                 {
                     int port = random.Next(3000, 16000);
-                    chromeOptions = new ChromeOptions();
-                    chromeOptions.AcceptInsecureCertificates = true;
                     if (isDisableImage)
                     {
                         chromeOptions.AddExtension(AppDomain.CurrentDomain.BaseDirectory + "\\blockImage.crx");
@@ -203,21 +142,42 @@ namespace AmazonSaveAcc.actionmain
                                 "headless"
                         });
                     }
-                    chromeOptions = new ChromeOptions();
-                    chromeOptions.AcceptInsecureCertificates = true;
-                    if (!String.IsNullOrEmpty(windowsSize))
-                        chromeOptions.AddArgument("--window-size=" + windowsSize);
-                    if (!String.IsNullOrEmpty(lang))
-                        chromeOptions.AddArgument("--lang=" + lang);
-                    chromeOptions.AddArgument($"--remote-debugging-port={port}");
-                    chromeOptions.AddArgument($"--user-agent={Useragent}");
-                    chromeOptions.AddExcludedArgument("enable-automation");
-                    chromeOptions.AddArgument("--disable-notifications");
-                    chromeOptions.AddAdditionalCapability("useAutomationExtension", false);
-                    chromeOptions.AddArgument("--disable-blink-features=AutomationControlled");
-                    chromeOptions.AddArgument("ignore-certificate-errors");
-                    chromeOptions.AddUserProfilePreference("credentials_enable_service", !disableSavePassword);
-                    chromeOptions.AddUserProfilePreference("profile.password_manager_enabled", !disableSavePassword);
+                    if (isMobile)
+                    {
+                        chromeOptions = new ChromeOptions();
+                        chromeOptions.AcceptInsecureCertificates = true;
+                        ChromeMobileEmulationDeviceSettings CMEDS = new ChromeMobileEmulationDeviceSettings();
+                        CMEDS.Width = Int32.Parse(windowsSize.Split(',')[0]);
+                        CMEDS.Height = Int32.Parse(windowsSize.Split(',')[1]);
+                        CMEDS.PixelRatio = 3.0;
+                        CMEDS.EnableTouchEvents = true;
+                        CMEDS.UserAgent = useragent;
+                        chromeOptions.EnableMobileEmulation(CMEDS);
+                        chromeOptions.AddUserProfilePreference("credentials_enable_service", !disableSavePassword);
+                        chromeOptions.AddUserProfilePreference("profile.password_manager_enabled", !disableSavePassword);
+                        chromeOptions.AddExcludedArgument("enable-automation");
+                        chromeOptions.AddArgument("--disable-notifications");
+                        chromeOptions.AddAdditionalCapability("useAutomationExtension", false);
+                        chromeOptions.AddArgument("--disable-blink-features=AutomationControlled");
+                    }
+                    else
+                    {
+                        chromeOptions = new ChromeOptions();
+                        chromeOptions.AcceptInsecureCertificates = true;
+                        if (!String.IsNullOrEmpty(windowsSize))
+                            chromeOptions.AddArgument("--window-size=" + windowsSize);
+                        if (!String.IsNullOrEmpty(lang))
+                            chromeOptions.AddArgument("--lang=" + lang);
+                        chromeOptions.AddArgument($"--remote-debugging-port={port}");
+                        chromeOptions.AddArgument($"--user-agent={Useragent}");
+                        chromeOptions.AddExcludedArgument("enable-automation");
+                        chromeOptions.AddArgument("--disable-notifications");
+                        chromeOptions.AddAdditionalCapability("useAutomationExtension", false);
+                        chromeOptions.AddArgument("--disable-blink-features=AutomationControlled");
+                        chromeOptions.AddArgument("ignore-certificate-errors");
+                        chromeOptions.AddUserProfilePreference("credentials_enable_service", !disableSavePassword);
+                        chromeOptions.AddUserProfilePreference("profile.password_manager_enabled", !disableSavePassword);
+                    }
                     FakeProxy();
                 }
                 if (chromeDriver == null)

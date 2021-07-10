@@ -146,11 +146,11 @@ namespace AmazonSaveAcc.actionmain
                     }
                     FakeProxy();
                     ChromeMobileEmulationDeviceSettings CMEDS = new ChromeMobileEmulationDeviceSettings();
-                    CMEDS.Width = 700;
-                    CMEDS.Height = 1000;
+                    CMEDS.Width = Int32.Parse(windowsSize.Split(',')[0]);
+                    CMEDS.Height = Int32.Parse(windowsSize.Split(',')[1]);
                     CMEDS.PixelRatio = 3.0;
                     CMEDS.EnableTouchEvents = true;
-                    CMEDS.UserAgent = "Mozilla/5.0 (Linux; Android 6.0.1; RedMi Note 5 Build/RB3N5C; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/68.0.3440.91 Mobile Safari/537.36";
+                    CMEDS.UserAgent = useragent;
                     chromeOptions.EnableMobileEmulation(CMEDS);
                     
                 }

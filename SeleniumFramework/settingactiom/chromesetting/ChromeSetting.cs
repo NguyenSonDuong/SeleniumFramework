@@ -105,7 +105,6 @@ namespace AmazonSaveAcc.actionmain
             this.chromeOptions = chromeOptions;
             this.chromeDriverService = chromeDriverService;
         }
-
         public ChromeDriver BuildChrome()
         {
             chromeDriver = null;
@@ -278,7 +277,6 @@ namespace AmazonSaveAcc.actionmain
                 throw ex;
             }
         }
-
         public static ChromeSetting Build()
         {
             ChromeSetting chromeSetting = new ChromeSetting();
@@ -330,7 +328,6 @@ namespace AmazonSaveAcc.actionmain
             chromeSetting.BuildChrome();
             return chromeSetting;
         }
-
         public void CloseChrome()
         {
             try
@@ -343,7 +340,6 @@ namespace AmazonSaveAcc.actionmain
                 throw ex;
             }
         }
-
         public void Click(String element, TypeElement type, int location = -1)
         {
             try
@@ -445,8 +441,6 @@ namespace AmazonSaveAcc.actionmain
                         break;
                     case TypeElement.NAME:
                         webElements = chromeDriver.FindElementsByName(element);
-                        break;
-                    case TypeElement.JS:
                         break;
                 }
                 return webElements;
@@ -596,8 +590,7 @@ namespace AmazonSaveAcc.actionmain
             {
                 throw ex;
             }
-        }
-        
+        }  
         public String GetText(String element, TypeElement type, int location = -1)
         {
             try

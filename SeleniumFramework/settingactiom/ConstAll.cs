@@ -13,7 +13,7 @@ namespace AmazonSaveAcc.actionmain
     public delegate void ActionHandle(Object obj, String data);
     public delegate void ProxyConnectHandle(Object obj, String data);
     public delegate void Action(object data, object sender);
-    public delegate Object StartActionChrome(object data = null, object sender = null);
+    public delegate Object StartActionDriver(object data = null, object sender = null);
     public class ConstAll
     {
         

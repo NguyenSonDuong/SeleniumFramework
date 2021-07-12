@@ -75,10 +75,10 @@
     <Compile Include="settingactiom\ActionCustom.cs" />
     <Compile Include="settingactiom\chromesetting\Chrome.cs" />
     <Compile Include="settingactiom\chromesetting\ChromeSetting.cs" />
-    <Compile Include="settingactiom\chromesetting\ProxyType.cs" />
+    <Compile Include="settingactiom\ProxyType.cs" />
     <Compile Include="settingactiom\ConstAll.cs" />
     <Compile Include="settingactiom\ErrorConst.cs" />
-    <Compile Include="settingactiom\firefoxsetting\FireFoxAction.cs" />
+    <Compile Include="settingactiom\firefoxsetting\Firefox.cs" />
     <Compile Include="settingactiom\firefoxsetting\FirefoxSetting.cs" />
     <Compile Include="settingactiom\IActionSelenium.cs" />
   </ItemGroup>

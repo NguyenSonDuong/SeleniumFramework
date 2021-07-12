@@ -121,6 +121,8 @@ namespace AmazonSaveAcc.actionmain
                 }
                 if (chromeOptions == null)
                 {
+                    chromeOptions = new ChromeOptions();
+                    chromeOptions.AcceptInsecureCertificates = true;
                     int port = random.Next(3000, 16000);
                     if (isDisableImage)
                     {
@@ -144,9 +146,15 @@ namespace AmazonSaveAcc.actionmain
                     }
                     if (isMobile)
                     {
-                        chromeOptions = new ChromeOptions();
-                        chromeOptions.AcceptInsecureCertificates = true;
+                        
                         ChromeMobileEmulationDeviceSettings CMEDS = new ChromeMobileEmulationDeviceSettings();
+                        if(String.IsNullOrEmpty(windowsSize)){
+                            windowsSize = "700,700";
+                        }
+                        if (String.IsNullOrEmpty(useragent))
+                        {
+                            useragent = "Mozilla/5.0 (Linux; Android 6.0.1; RedMi Note 5 Build/RB3N5C; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/68.0.3440.91 Mobile Safari/537.36";
+                        }
                         CMEDS.Width = Int32.Parse(windowsSize.Split(',')[0]);
                         CMEDS.Height = Int32.Parse(windowsSize.Split(',')[1]);
                         CMEDS.PixelRatio = 3.0;
@@ -162,8 +170,6 @@ namespace AmazonSaveAcc.actionmain
                     }
                     else
                     {
-                        chromeOptions = new ChromeOptions();
-                        chromeOptions.AcceptInsecureCertificates = true;
                         if (!String.IsNullOrEmpty(windowsSize))
                             chromeOptions.AddArgument("--window-size=" + windowsSize);
                         if (!String.IsNullOrEmpty(lang))

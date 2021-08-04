@@ -17,7 +17,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         private event ErrorHandle errorEvent;
         private event ProcessHandle processEvent;
         private event SuccessHandle successEvent;
-
+        private bool isStop = false;
         private List<StartActionDriver> listAction;
 
         public event ErrorHandle ErrorEvent
@@ -40,6 +40,7 @@ namespace SeleniumFramework.settingactiom.chromesetting
         public ChromeSetting ChromeSetting { get => chromeSetting; set => chromeSetting = value; }
         public bool IsCleanInput { get => isCleanInput; set => isCleanInput = value; }
         public List<StartActionDriver> ListAction { get => listAction; set => listAction = value; }
+        public bool IsStop { get => isStop; set => isStop = value; }
 
         public Chrome()
         {
@@ -63,14 +64,15 @@ namespace SeleniumFramework.settingactiom.chromesetting
                     chromeSetting.BuildChrome();
                     if (startActionChrome != null)
                     {
-                        startActionChrome(chromeSetting,this);
+                        startActionChrome(chromeSetting, this);
                     }
                     foreach (StartActionDriver startAction in ListAction)
                     {
                         startAction();
                         Thread.Sleep(delay);
                     }
-                    chromeSetting.CloseChrome();
+                    if (isStop)
+                        chromeSetting.CloseChrome();
 
                 }
                 catch (Exception ex)
@@ -81,6 +83,40 @@ namespace SeleniumFramework.settingactiom.chromesetting
                         throw ex;
                 }
             });
+        }
+        public void ExcuteJS(String js)
+        {
+            try
+            {
+                chromeSetting.ChromeDriver.ExecuteScript(js);
+            }
+            catch (Exception ex)
+            {
+                if (errorEvent != null)
+                    errorEvent(ex, this, 100);
+                else
+                    throw ex;
+            }
+        }
+        public void StartNoThread()
+        {
+            try
+            {
+                chromeSetting.BuildChrome();
+                foreach (StartActionDriver startAction in ListAction)
+                {
+                    startAction();
+                }
+                if (isStop)
+                    chromeSetting.CloseChrome();
+            }
+            catch (Exception ex)
+            {
+                if (errorEvent != null)
+                    errorEvent(ex, this, 100);
+                else
+                    throw ex;
+            }
         }
         public Thread StartThread()
         {
@@ -93,7 +129,8 @@ namespace SeleniumFramework.settingactiom.chromesetting
                     {
                         startAction();
                     }
-                    chromeSetting.CloseChrome();
+                    if (isStop)
+                        chromeSetting.CloseChrome();
                 }
                 catch (Exception ex)
                 {

@@ -202,9 +202,9 @@ namespace AmazonSaveAcc.actionmain
             {
                 if (typeProxy.Equals(ProxyType.PROXY_SSH))
                 {
-                    if (profile.Split('|').Length >= 3)
+                    if (proxy.Split('|').Length >= 3)
                     {
-                        String[] proxys = profile.Split('|');
+                        String[] proxys = proxy.Split('|');
                         sshClient = ActionCustom.SSHCoverSock5(proxys[0], proxys[1], proxys[2]);
                         string proxy5 = "127.0.0.1:" + sshClient.ForwardedPorts;
                         chromeOptions.AddArguments(new string[]
@@ -220,9 +220,9 @@ namespace AmazonSaveAcc.actionmain
                 else
                 if (typeProxy.Equals(ProxyType.PROXY_SOCK_5))
                 {
-                    if (profile.Split(':').Length >= 4)
+                    if (proxy.Split(':').Length >= 4)
                     {
-                        String[] proxys = profile.Split(':');
+                        String[] proxys = proxy.Split(':');
                         String fileName = PathToApplication + "\\" + proxys[0] + proxys[1] + ".zip";
                         if (File.Exists(fileName))
                         {

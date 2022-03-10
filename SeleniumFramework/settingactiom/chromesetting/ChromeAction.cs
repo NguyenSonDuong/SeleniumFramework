@@ -72,7 +72,7 @@ namespace AmazonSaveAcc.actionmain
         {
             try
             {
-                chromeSetting.ChromeDriver.FindElementByClassName(className).Click();
+                chromeSetting.ChromeDriver.FindElement(By.ClassName(className)).Click();
 
             }
             catch (Exception ex)
@@ -87,7 +87,7 @@ namespace AmazonSaveAcc.actionmain
         {
             try
             {
-                chromeSetting.ChromeDriver.FindElementsByClassName(className)[pos].Click();
+                chromeSetting.ChromeDriver.FindElements(By.ClassName(className))[pos].Click();
 
             }
             catch (Exception ex)
@@ -98,11 +98,11 @@ namespace AmazonSaveAcc.actionmain
                     throw ex;
             }
         }
-        public void ClickXPath(String className)
+        public void ClickXPath(String xPath)
         {
             try
             {
-                chromeSetting.ChromeDriver.FindElementByXPath(className).Click();
+                chromeSetting.ChromeDriver.FindElement(By.XPath(xPath)).Click();
 
             }
             catch (Exception ex)
@@ -113,11 +113,11 @@ namespace AmazonSaveAcc.actionmain
                     throw ex;
             }
         }
-        public void ClickXPath(String className, int pos)
+        public void ClickXPath(String xPath, int pos)
         {
             try
             {
-                chromeSetting.ChromeDriver.FindElementsByXPath(className)[pos].Click();
+                chromeSetting.ChromeDriver.FindElements(By.XPath(xPath))[pos].Click();
 
             }
             catch (Exception ex)
@@ -128,11 +128,11 @@ namespace AmazonSaveAcc.actionmain
                     throw ex;
             }
         }
-        public void ClickXPath(String className, String stringSame, bool isExactly)
+        public void ClickXPath(String xPath, String stringSame, bool isExactly)
         {
             try
             {
-                foreach(IWebElement item in chromeSetting.ChromeDriver.FindElementsByXPath(className))
+                foreach(IWebElement item in chromeSetting.ChromeDriver.FindElements(By.XPath(xPath)))
                 {
                     if (isExactly)
                     {
@@ -160,11 +160,11 @@ namespace AmazonSaveAcc.actionmain
                     throw ex;
             }
         }
-        public void ClickID(String className)
+        public void ClickID(String id)
         {
             try
             {
-                chromeSetting.ChromeDriver.FindElementById(className).Click();
+                chromeSetting.ChromeDriver.FindElement(By.Id(id)).Click();
 
             }
             catch (Exception ex)
@@ -204,8 +204,8 @@ namespace AmazonSaveAcc.actionmain
         {
             try
             {
-                chromeSetting.ChromeDriver.FindElementByClassName(className).Clear();
-                chromeSetting.ChromeDriver.FindElementByClassName(className).SendKeys(mess);
+                chromeSetting.ChromeDriver.FindElement(By.ClassName(className)).Clear();
+                chromeSetting.ChromeDriver.FindElement(By.ClassName(className)).SendKeys(mess);
 
             }
             catch (Exception ex)
@@ -216,19 +216,19 @@ namespace AmazonSaveAcc.actionmain
                     throw ex;
             }
         }
-        public void SendKeyName(String Name, String mess)
+        public void SendKeyName(String name, String mess)
         {
             try
             {
                 try
                 {
-                    chromeSetting.ChromeDriver.FindElementByName(Name).Clear();
+                    chromeSetting.ChromeDriver.FindElement(By.Name(name)).Clear();
                 }
                 catch(Exception ex)
                 {
 
                 }
-                chromeSetting.ChromeDriver.FindElementByName(Name).SendKeys(mess);
+                chromeSetting.ChromeDriver.FindElement(By.Name(name)).SendKeys(mess);
 
             }
             catch (Exception ex)
@@ -245,14 +245,14 @@ namespace AmazonSaveAcc.actionmain
             {
                 try
                 {
-                    chromeSetting.ChromeDriver.FindElementByXPath(xPath).Clear();
+                    chromeSetting.ChromeDriver.FindElement(By.XPath(xPath)).Clear();
                 }
                 catch (Exception ex)
                 {
 
                 }
                
-                chromeSetting.ChromeDriver.FindElementByXPath(xPath).SendKeys(mess);
+                chromeSetting.ChromeDriver.FindElement(By.XPath(xPath)).SendKeys(mess);
 
             }
             catch (Exception ex)
@@ -269,13 +269,13 @@ namespace AmazonSaveAcc.actionmain
             {
                 try
                 {
-                    chromeSetting.ChromeDriver.FindElementById(id).Clear();
+                    chromeSetting.ChromeDriver.FindElement(By.Id(id)).Clear();
                 }
                 catch (Exception ex)
                 {
 
                 }
-                chromeSetting.ChromeDriver.FindElementById(id).SendKeys(mess);
+                chromeSetting.ChromeDriver.FindElement(By.Id(id)).SendKeys(mess);
             }
             catch (Exception ex)
             {
@@ -289,7 +289,7 @@ namespace AmazonSaveAcc.actionmain
         {
             try
             {
-                ReadOnlyCollection<IWebElement> webs = chromeSetting.ChromeDriver.FindElementsByClassName(className);
+                ReadOnlyCollection<IWebElement> webs = chromeSetting.ChromeDriver.FindElements(By.ClassName(className));
                 int i = 0;
                 foreach (IWebElement item in webs)
                 {
@@ -316,7 +316,7 @@ namespace AmazonSaveAcc.actionmain
         {
             try
             {
-                ReadOnlyCollection<IWebElement> webs = chromeSetting.ChromeDriver.FindElementsByName(name);
+                ReadOnlyCollection<IWebElement> webs = chromeSetting.ChromeDriver.FindElements(By.Name(name));
                 int i = 0;
                 foreach (IWebElement item in webs)
                 {
@@ -343,7 +343,7 @@ namespace AmazonSaveAcc.actionmain
         {
             try
             {
-                ReadOnlyCollection<IWebElement> webs = chromeSetting.ChromeDriver.FindElementsByXPath(xPath);
+                ReadOnlyCollection<IWebElement> webs = chromeSetting.ChromeDriver.FindElements(By.XPath(xPath));
                 int i = 0;
                 foreach (IWebElement item in webs)
                 {
@@ -371,7 +371,7 @@ namespace AmazonSaveAcc.actionmain
         {
             try
             {
-                return chromeSetting.ChromeDriver.FindElementByClassName(className).Text.Equals(mess);
+                return chromeSetting.ChromeDriver.FindElement(By.ClassName(className)).Text.Equals(mess);
             }
             catch (Exception ex)
             {
@@ -383,7 +383,7 @@ namespace AmazonSaveAcc.actionmain
         {
             try
             {
-                return chromeSetting.ChromeDriver.FindElementByClassName(Name).Text.Equals(mess);
+                return chromeSetting.ChromeDriver.FindElement(By.Name(Name)).Text.Equals(mess);
             }
             catch (Exception ex)
             {
@@ -394,7 +394,7 @@ namespace AmazonSaveAcc.actionmain
         {
             try
             {
-                return chromeSetting.ChromeDriver.FindElementByXPath(xPath).Text.Equals(mess);
+                return chromeSetting.ChromeDriver.FindElement(By.XPath(xPath)).Text.Equals(mess);
             }
             catch (Exception ex)
             {
@@ -405,7 +405,7 @@ namespace AmazonSaveAcc.actionmain
         {
             try
             {
-                chromeSetting.ChromeDriver.FindElementByXPath(xPath);
+                chromeSetting.ChromeDriver.FindElement(By.XPath(xPath));
                 return true;
             }
             catch (Exception ex)
@@ -417,7 +417,7 @@ namespace AmazonSaveAcc.actionmain
         {
             try
             {
-                return chromeSetting.ChromeDriver.FindElementById(id).Text.Equals(mess);
+                return chromeSetting.ChromeDriver.FindElement(By.Id(id)).Text.Equals(mess);
             }
             catch (Exception ex)
             {
@@ -429,7 +429,7 @@ namespace AmazonSaveAcc.actionmain
         {
             try
             {
-                return chromeSetting.ChromeDriver.FindElementByXPath(xPath).Location;
+                return chromeSetting.ChromeDriver.FindElement(By.XPath(xPath)).Location;
 
             }
             catch (Exception ex)
@@ -443,7 +443,7 @@ namespace AmazonSaveAcc.actionmain
         {
             try
             {
-                return chromeSetting.ChromeDriver.FindElementsByXPath(xPath)[pos].Location;
+                return chromeSetting.ChromeDriver.FindElements(By.XPath(xPath))[pos].Location;
             }
             catch (Exception ex)
             {
@@ -456,7 +456,7 @@ namespace AmazonSaveAcc.actionmain
         {
             try
             {
-                return chromeSetting.ChromeDriver.FindElementsByClassName(className)[pos].Location;
+                return chromeSetting.ChromeDriver.FindElements(By.ClassName(className))[pos].Location;
             }
             catch (Exception ex)
             {
@@ -576,7 +576,7 @@ namespace AmazonSaveAcc.actionmain
             try
             {
                 Actions actions = new Actions(chromeSetting.ChromeDriver);
-                actions.MoveToElement(chromeSetting.ChromeDriver.FindElementsByClassName(classname)[pos]).Build().Perform();
+                actions.MoveToElement(chromeSetting.ChromeDriver.FindElements(By.ClassName(classname))[pos]).Build().Perform();
 
             }
             catch (Exception ex)
@@ -593,7 +593,7 @@ namespace AmazonSaveAcc.actionmain
             {
 
                 Actions actions = new Actions(chromeSetting.ChromeDriver);
-                actions.MoveToElement(chromeSetting.ChromeDriver.FindElementsByXPath(xPath)[pos]).Build().Perform();
+                actions.MoveToElement(chromeSetting.ChromeDriver.FindElements(By.XPath(xPath))[pos]).Build().Perform();
             }
             catch (Exception ex)
             {
@@ -624,7 +624,7 @@ namespace AmazonSaveAcc.actionmain
             try
             {
 
-                return chromeSetting.ChromeDriver.FindElementsByXPath(xPath).Count;
+                return chromeSetting.ChromeDriver.FindElements(By.XPath(xPath)).Count;
             }
             catch (Exception ex)
             {
@@ -640,7 +640,7 @@ namespace AmazonSaveAcc.actionmain
             try
             {
 
-                return chromeSetting.ChromeDriver.FindElementsByClassName(className).Count;
+                return chromeSetting.ChromeDriver.FindElements(By.ClassName(className)).Count;
             }
             catch (Exception ex)
             {

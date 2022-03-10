@@ -149,7 +149,7 @@ namespace AmazonSaveAcc.actionmain
         {
             try
             {
-                chromeDriver.FindElementByXPath(xPath).Click();
+                chromeDriver.FindElement(By.XPath(xPath)).Click();
             }
             catch (Exception ex)
             {

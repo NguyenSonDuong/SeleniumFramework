@@ -16,3 +16,11 @@ D:\CShaphProject\SeleniumFramework\SeleniumFramework\obj\Debug\SeleniumFramework
 D:\CShaphProject\SeleniumFramework\SeleniumFramework\obj\Debug\SeleniumFramework.csproj.CopyComplete
 D:\CShaphProject\SeleniumFramework\SeleniumFramework\obj\Debug\SeleniumFramework.dll
 D:\CShaphProject\SeleniumFramework\SeleniumFramework\obj\Debug\SeleniumFramework.pdb
+D:\CShashCode\SeleniumFramework\SeleniumFramework\SeleniumFramework\obj\Debug\SeleniumFramework.csproj.AssemblyReference.cache
+D:\CShashCode\SeleniumFramework\SeleniumFramework\SeleniumFramework\obj\Debug\SeleniumFramework.csproj.CoreCompileInputs.cache
+D:\CShashCode\SeleniumFramework\SeleniumFramework\SeleniumFramework\obj\Debug\SeleniumFramework.dll
+D:\CShashCode\SeleniumFramework\SeleniumFramework\SeleniumFramework\obj\Debug\SeleniumFramework.pdb
+D:\CShashCode\SeleniumFramework\SeleniumFramework\SeleniumFramework\bin\Debug\SeleniumFramework.dll
+D:\CShashCode\SeleniumFramework\SeleniumFramework\SeleniumFramework\bin\Debug\SeleniumFramework.pdb
+D:\CShashCode\SeleniumFramework\SeleniumFramework\SeleniumFramework\bin\Debug\WebDriver.dll
+D:\CShashCode\SeleniumFramework\SeleniumFramework\SeleniumFramework\obj\Debug\SeleniumFramework.csproj.CopyComplete
